@@ -43,6 +43,9 @@
             this.label6 = new System.Windows.Forms.Label();
             this._fuelLabel = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
+            this._orbitVisualizer = new icfp09.OrbitVisualizer();
+            this._distanceLabel = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -53,17 +56,21 @@
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this._orbitVisualizer);
             this.splitContainer1.Panel1.Controls.Add(this.toolStrip1);
             this.splitContainer1.Panel1.Controls.Add(this.menuStrip1);
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this._distanceLabel);
+            this.splitContainer1.Panel2.Controls.Add(this.label4);
             this.splitContainer1.Panel2.Controls.Add(this._targetLabel);
             this.splitContainer1.Panel2.Controls.Add(this.label6);
             this.splitContainer1.Panel2.Controls.Add(this._fuelLabel);
@@ -73,7 +80,7 @@
             this.splitContainer1.Panel2.Controls.Add(this._scoreLabel);
             this.splitContainer1.Panel2.Controls.Add(this.label1);
             this.splitContainer1.Size = new System.Drawing.Size(1022, 721);
-            this.splitContainer1.SplitterDistance = 523;
+            this.splitContainer1.SplitterDistance = 581;
             this.splitContainer1.TabIndex = 0;
             // 
             // toolStrip1
@@ -142,7 +149,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(75, 52);
+            this.label3.Location = new System.Drawing.Point(72, 74);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(44, 13);
             this.label3.TabIndex = 2;
@@ -151,7 +158,7 @@
             // _positionLabel
             // 
             this._positionLabel.AutoSize = true;
-            this._positionLabel.Location = new System.Drawing.Point(122, 51);
+            this._positionLabel.Location = new System.Drawing.Point(123, 74);
             this._positionLabel.Name = "_positionLabel";
             this._positionLabel.Size = new System.Drawing.Size(35, 13);
             this._positionLabel.TabIndex = 3;
@@ -160,7 +167,7 @@
             // _targetLabel
             // 
             this._targetLabel.AutoSize = true;
-            this._targetLabel.Location = new System.Drawing.Point(122, 94);
+            this._targetLabel.Location = new System.Drawing.Point(123, 61);
             this._targetLabel.Name = "_targetLabel";
             this._targetLabel.Size = new System.Drawing.Size(35, 13);
             this._targetLabel.TabIndex = 7;
@@ -169,7 +176,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(75, 95);
+            this.label6.Location = new System.Drawing.Point(72, 61);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(38, 13);
             this.label6.TabIndex = 6;
@@ -178,7 +185,7 @@
             // _fuelLabel
             // 
             this._fuelLabel.AutoSize = true;
-            this._fuelLabel.Location = new System.Drawing.Point(123, 77);
+            this._fuelLabel.Location = new System.Drawing.Point(123, 47);
             this._fuelLabel.Name = "_fuelLabel";
             this._fuelLabel.Size = new System.Drawing.Size(35, 13);
             this._fuelLabel.TabIndex = 5;
@@ -187,11 +194,40 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(72, 78);
+            this.label8.Location = new System.Drawing.Point(72, 48);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(27, 13);
             this.label8.TabIndex = 4;
             this.label8.Text = "Fuel";
+            // 
+            // _orbitVisualizer
+            // 
+            this._orbitVisualizer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._orbitVisualizer.DrawTrail = true;
+            this._orbitVisualizer.Location = new System.Drawing.Point(0, 49);
+            this._orbitVisualizer.Name = "_orbitVisualizer";
+            this._orbitVisualizer.Size = new System.Drawing.Size(1022, 532);
+            this._orbitVisualizer.TabIndex = 2;
+            this._orbitVisualizer.TargetRadius = 0F;
+            this._orbitVisualizer.Text = "orbitVisualizer1";
+            // 
+            // _distanceLabel
+            // 
+            this._distanceLabel.AutoSize = true;
+            this._distanceLabel.Location = new System.Drawing.Point(264, 61);
+            this._distanceLabel.Name = "_distanceLabel";
+            this._distanceLabel.Size = new System.Drawing.Size(35, 13);
+            this._distanceLabel.TabIndex = 9;
+            this._distanceLabel.Text = "label2";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(209, 61);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(49, 13);
+            this.label4.TabIndex = 8;
+            this.label4.Text = "Distance";
             // 
             // MainForm
             // 
@@ -231,6 +267,9 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label _scoreLabel;
         private System.Windows.Forms.Label label1;
+        private OrbitVisualizer _orbitVisualizer;
+        private System.Windows.Forms.Label _distanceLabel;
+        private System.Windows.Forms.Label label4;
     }
 }
 

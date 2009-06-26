@@ -7,6 +7,21 @@ using System.IO;
 namespace icfp09
 {
     using System.Diagnostics;
+    
+    public class VmState
+    {
+        private double[] _memory = new double[1 << 14];
+        private double[] _input = new double[1 << 14];
+        private double[] _output = new double[1 << 14];
+        private bool _status = false;
+
+        public int Elapsed
+        {
+            get;
+            private set;
+        }
+            
+    }
 
     public class VmProgram
     {
@@ -68,9 +83,11 @@ namespace icfp09
         public double X { get; private set; }
         public double Y { get; private set; }
         public double Target { get; private set; }
+        public int Elapsed { get; private set; }
 
-        public VirtualMachineStepArgs(double score, double fuel, double x, double y, double target)
+        public VirtualMachineStepArgs(int elapsed, double score, double fuel, double x, double y, double target)
         {
+            Elapsed = elapsed;
             Score = score;
             Fuel = fuel;
             X = x;
@@ -89,8 +106,16 @@ namespace icfp09
         private double[] _output = new double[1 << 14];
         private bool _status = false;
 
+        public int Elapsed
+        {
+            get; private set;
+        }
         public double Configuration
         {
+            get
+            {
+                return _input[0x3e80];
+            }
             set
             {
                 _input[0x3e80] = value;
@@ -123,14 +148,25 @@ namespace icfp09
         public VirtualMachine(VmProgram program)
         {
             _program = program;
-            program.Data.CopyTo(_memory, 0);
+            this.Reset();
         }
 
-        public void Step()
+        public void Reset()
         {
+            _input = new double[1 << 14];
+            _output = new double[1 << 14];
+            _program.Data.CopyTo(_memory, 0);
+            _status = false;
+            Elapsed = 0;
+        }
+
+        public VirtualMachineStepArgs Step()
+        {
+            Debug.Assert(Configuration != 0.0);
+
             for (int ip = 0; ip <= _program.Length; ip++)
             {
-                #region
+                #region Interpreter
                 int frame = _program.Instructions[ip];
                 if((frame & (0xF0000000)) == 0) // S-Type
                 {
@@ -227,8 +263,14 @@ namespace icfp09
                 #endregion
             }
 
+            Elapsed = Elapsed + 1;
+            var args = new VirtualMachineStepArgs(
+                    Elapsed, _output[0x0], _output[0x1], _output[0x2], _output[0x3], _output[0x4]);
+
             if (OnStep != null)
-                OnStep(this, new VirtualMachineStepArgs(_output[0x0], _output[0x1], _output[0x2], _output[0x3], _output[0x4]));
+                OnStep(this, args);
+
+            return args;
         } // Step()
     } // VirtualMachine
 } // Namespace icfp09
