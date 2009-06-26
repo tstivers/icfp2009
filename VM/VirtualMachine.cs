@@ -8,26 +8,13 @@ namespace icfp09
 {
     using System.Diagnostics;
 
-    public class VmState
-    {
-        // memory
-        private Dictionary<int, double> _r;
-
-        // input registers
-        private Dictionary<int, double> _in;
-
-        // output registers
-        private Dictionary<int, double> _out;
-
-    }
-
     public class VmProgram
     {
         // vector of instructions
-        private readonly int[] _instructions = new int[2 ^ 14];
+        private readonly int[] _instructions = new int[1 << 14];
 
         // initial memory
-        private readonly double[] _data = new double[2 ^ 14];
+        private readonly double[] _data = new double[1 << 14];
 
         // number of instructions
         private readonly int _length;
@@ -74,18 +61,60 @@ namespace icfp09
         }
     }
 
+    public class VirtualMachineStepArgs : EventArgs
+    {
+        public double Score { get; private set; }
+        public double Fuel { get; private set; }
+        public double X { get; private set; }
+        public double Y { get; private set; }
+        public double Target { get; private set; }
+
+        public VirtualMachineStepArgs(double score, double fuel, double x, double y, double target)
+        {
+            Score = score;
+            Fuel = fuel;
+            X = x;
+            Y = y;
+            Target = target;
+        }
+    }
+
     public class VirtualMachine
     {
+        public EventHandler<VirtualMachineStepArgs> OnStep;
+
         private VmProgram _program;
-        private double[] _memory = new double[2^14];
-        private double[] _input = new double[2 ^ 14];
-        private double[] _output = new double[2 ^ 14];
+        private double[] _memory = new double[1 << 14];
+        private double[] _input = new double[1 << 14];
+        private double[] _output = new double[1 << 14];
+        private bool _status = false;
+
+        public double Configuration
+        {
+            set
+            {
+                _input[0x3e80] = value;
+            }
+        }
+        public double XVelocity
+        {
+            set
+            {
+                _input[0x2] = value;
+            }
+        }
+        public double YVelocity
+        {
+            set
+            {
+                _input[0x3] = value;
+            }
+        }
 
         public double[] InPort
         {
             get { return _input; }
         }
-
         public double[] OutPort
         {
             get { return _output; }
@@ -99,15 +128,14 @@ namespace icfp09
 
         public void Step()
         {
-            bool status = false;
-
-            for(int ip = 0; ip < _program.Length; ip++)
+            for (int ip = 0; ip <= _program.Length; ip++)
             {
+                #region
                 int frame = _program.Instructions[ip];
-                if((frame & (0xFF000000)) == 0) // S-Type
+                if((frame & (0xF0000000)) == 0) // S-Type
                 {
                     int op = frame >> 24;
-                    int imm = (frame & 0x0000FFFF) >> 14;
+                    int imm = (frame >> 21) & 0x07;
                     int r1 = frame & 0x3FFF;
 
                     switch(op)
@@ -119,19 +147,19 @@ namespace icfp09
                             switch(imm)
                             {
                                 case 0x0: // <
-                                    status = _memory[r1] < 0.0;
+                                    _status = _memory[r1] < 0.0;
                                     break;
                                 case 0x1: // <=
-                                    status = _memory[r1] <= 0.0;
+                                    _status = _memory[r1] <= 0.0;
                                     break;
                                 case 0x2: // ==
-                                    status = _memory[r1] == 0.0;
+                                    _status = _memory[r1] == 0.0;
                                     break;
                                 case 0x3: // >=
-                                    status = _memory[r1] >= 0.0;
+                                    _status = _memory[r1] >= 0.0;
                                     break;
                                 case 0x4: // >
-                                    status = _memory[r1] > 0.0;
+                                    _status = _memory[r1] > 0.0;
                                     break;
                                 default:
                                     Debug.Assert(false, "Illegal S-Type ImmCode: " + String.Format("0x{0:x4}", imm));
@@ -188,7 +216,7 @@ namespace icfp09
                             break;
 
                         case 0x6: // Phi
-                            _memory[ip] = status ? _memory[r1] : _memory[r2];
+                            _memory[ip] = _status ? _memory[r1] : _memory[r2];
                             break;
 
                         default:
@@ -196,7 +224,11 @@ namespace icfp09
                             break;
                     }
                 }
+                #endregion
             }
-        }
-    }
-}
+
+            if (OnStep != null)
+                OnStep(this, new VirtualMachineStepArgs(_output[0x0], _output[0x1], _output[0x2], _output[0x3], _output[0x4]));
+        } // Step()
+    } // VirtualMachine
+} // Namespace icfp09
