@@ -29,6 +29,9 @@ namespace icfp09
         public void AddCircle(double radius, Pen pen)
         {
             _debugCircles.Add(new Circle(radius, pen));
+            if(radius * 2.0 > _dimensions.Width)
+                this.SetScale(radius * 2.0);
+
             this.UpdateBackground();
         }        
 
@@ -147,11 +150,19 @@ namespace icfp09
             this.UpdateBackground();
         }
 
+        public void SetScale(double d)
+        {
+            _dimensions = new RectangleF(0, 0, (float)d, (float)d);
+            this.ComputeScale();
+            this.UpdateBackground();
+            this.Invalidate();
+        }
+
         public OrbitVisualizer()
         {
             InitializeComponent();
             DrawTrail = true;
-            _dimensions = new RectangleF(0, 0, 50000000.0f, 50000000.0f);
+            _dimensions = new RectangleF(0, 0, 25000000.0f, 25000000.0f);
         }
 
         protected override void OnPaint(PaintEventArgs pe)
