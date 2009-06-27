@@ -40,8 +40,6 @@ namespace icfp09
             _fuelLabel.Text = args.Fuel.ToString();
             _orbitVisualizer.SetOrbiterPos(args.Position);
             _orbitVisualizer.SetTargetPos(args.TargetPosition);
-            _orbitVisualizer.SetTargetFuturePos(
-                    Vector2d.FromAngle(this.ComputeAngleAtTime(_targetAngleOffset, _targetRv, args.Elapsed)) * args.TargetOrbitRadius);
             _orbitVisualizer.Invalidate();
             _offsetLabel.Text = ((int)(args.OrbitRadius - args.TargetOrbitRadius)).ToString();
             _targetOffsetLabel.Text = ((int)((args.Position - args.TargetPosition).length())).ToString();
@@ -92,7 +90,45 @@ namespace icfp09
 
         private double _targetAngleOffset;
 
-        private void ExecutSimClick(object sender, EventArgs e)
+        private bool ComputeAlignmentDelay(double startRadius, double targetRadius, ref int burnStart)
+        {
+            double transferTime = this.ComputeTransferTime(startRadius, targetRadius);
+            double targetRv = (Math.PI * 2.0) / this.ComputePeriod(targetRadius);
+            double myRv = (Math.PI * 2.0) / this.ComputePeriod(startRadius);
+
+            // run forward until we will orbit into place
+            Vector2d myFuturePosition;
+            Vector2d targetFuturePosition;
+            VirtualMachineStepArgs args;
+            do
+            {
+                args = _vm.Step();
+                myFuturePosition = (args.Position.normalize() * -1.0) * args.TargetOrbitRadius;
+                targetFuturePosition = Vector2d.FromAngle(args.TargetPosition.angle() + (targetRv * transferTime)) * args.TargetOrbitRadius;
+                burnStart = args.Elapsed - 1;
+                if(burnStart == 1E5)
+                    break;
+            } while ((myFuturePosition - targetFuturePosition).length() > 500.0);
+
+            return burnStart != 1E5;
+        }
+
+        private double _lastDv;
+        private void Finesse()
+        {
+            var args = _vm.Step();
+
+            if (args.TargetDistance > 1000.0 && args.TargetDistance > _lastDv)
+            {
+                Vector2d targetVector = (args.Position - args.TargetPosition).normalize();
+                //_vm.XVelocity = targetVector.x * 0.0001;
+                //_vm.YVelocity = targetVector.y * 0.0001;
+                //_orbitVisualizer.DrawLine(args.Position, args.Position + (targetVector * 1000000.0), Pens.Brown);
+            }
+            _lastDv = args.TargetDistance;
+        }
+
+        private void ExecuteSimClick(object sender, EventArgs e)
         {
             // reset everything
             if(_timer != null)
@@ -102,7 +138,7 @@ namespace icfp09
             _configuration = Double.Parse(_scenarioBox.Text);
             _orbitVisualizer.ClearCircles();
             _orbitVisualizer.ClearLines();
-            _orbitVisualizer.SetScale(10000000.0);
+            _orbitVisualizer.SetScale(0.0);
 
             _vm = new VirtualMachine(new VmProgram(_binBox.Text));
             _vm.Reset();
@@ -120,24 +156,15 @@ namespace icfp09
             var startRadius = args.OrbitRadius;
             var targetRadius = args.TargetOrbitRadius;
 
-            var transferRadius = 0.0;
-            if (Math.Abs(startRadius - targetRadius) < 1000000.0)
-                transferRadius = targetRadius + 1000000.0;
-
             _orbitVisualizer.AddCircle(startRadius, Pens.Blue);
             _orbitVisualizer.AddCircle(targetRadius, Pens.Red);
-            _orbitVisualizer.AddCircle(transferRadius, Pens.Green);
 
-            {
-                _vm.Reset();
-                _vm.Configuration = _configuration;
-                args = _vm.Step();
-                _orbitVisualizer.AddLine(Vector2d.Zero(), args.TargetPosition, Pens.Blue);
-                for (int i = (int)this.ComputePeriod(args.TargetOrbitRadius); i > 0; i--)
-                    args = _vm.Step();
-                //_orbitVisualizer.AddLine(Vector2d.Zero(), args.TargetPosition, Pens.Red);
-            }
-            
+            _vm.Reset();
+            _vm.Configuration = _configuration;
+
+            int burnStart = 0;
+            this.ComputeAlignmentDelay(startRadius, targetRadius, ref burnStart);
+
             // reset the vm and do the run for real
             _vm.Reset();
 
@@ -150,6 +177,9 @@ namespace icfp09
             }
 
             _vm.Configuration = _configuration;
+
+            for (args = _vm.Step(); args.Elapsed < burnStart; )
+                args = _vm.Step();
 
             ChangeOrbit(targetRadius, false);
 
@@ -203,7 +233,7 @@ namespace icfp09
         void TimerTick(object sender, EventArgs e)
         {
             for (int i = 0; i < _frameSkip; i++)
-                _vm.Step();
+                this.Finesse();
         }
 
         private void button2_Click(object sender, EventArgs e)

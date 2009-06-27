@@ -55,13 +55,18 @@ namespace icfp09
         public double angle()
         {
             var v = this.normalize();
-            return Math.Atan2(v.y, v.x);
+            var angle =  Math.Atan2(v.y, v.x);
+            if (angle < 0.0)
+                angle *= -1.0;
+            else
+                angle = Math.PI + (Math.PI - angle);
+            return angle;
         }
 
         public Vector2d(double angle)
         {
-            this.x = Math.Sin(angle);
-            this.y = Math.Cos(angle);
+            this.x = Math.Cos(angle);
+            this.y = -1.0 * Math.Sin(angle);
         }
 
         public static Vector2d Zero()

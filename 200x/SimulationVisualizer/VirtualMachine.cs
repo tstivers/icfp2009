@@ -131,6 +131,14 @@ namespace icfp09
                 return TargetPosition.length();
             }
         }
+
+        public double TargetDistance
+        {
+            get
+            {
+                return (Position - TargetPosition).length();
+            }
+        }
     }
 
     public class VirtualMachine

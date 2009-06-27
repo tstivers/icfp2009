@@ -145,7 +145,7 @@
             this.button1.TabIndex = 14;
             this.button1.Text = "execute\r\n";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.ExecutSimClick);
+            this.button1.Click += new System.EventHandler(this.ExecuteSimClick);
             // 
             // _offsetLabel
             // 

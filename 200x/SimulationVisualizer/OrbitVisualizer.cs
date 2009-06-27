@@ -35,8 +35,8 @@ namespace icfp09
         public void AddCircle(double radius, Pen pen)
         {
             _debugCircles.Add(new Circle(radius, pen));
-            if(radius * 2.0 > _dimensions.Width)
-                this.SetScale(radius * 2.0);
+            if((radius * 2.0) * 1.1 > _dimensions.Width)
+                this.SetScale(radius * 2.0 * 1.1);
 
             this.UpdateBackground();
         }        
@@ -121,6 +121,7 @@ namespace icfp09
             public Pen pen;
         }
         private List<Line> _debugLines = new List<Line>();
+        private List<Line> _tempLines = new List<Line>();
         private struct Circle
         {
             public double radius;
@@ -148,6 +149,11 @@ namespace icfp09
 
            _debugLines.Add(new Line(start, end, p));
             this.UpdateBackground();
+        }
+
+        public void DrawLine(Vector2d start, Vector2d end, Pen p)
+        {
+            _tempLines.Add(new Line(start, end, p));
         }
 
         public void ClearLines()
@@ -178,7 +184,10 @@ namespace icfp09
                 g.DrawImageUnscaled(_staticBckg, 0, 0);
                 g.FillEllipse(_orbiterBrush, this.GetObjectRect(_orbiterPos, 100000.0f));
                 g.FillEllipse(_targetBrush, this.GetObjectRect(_targetPos, 100000.0f));
-                g.FillEllipse(Brushes.White, this.GetObjectRect(_targetFuturePos, 100000.0f));                
+                g.FillEllipse(Brushes.White, this.GetObjectRect(_targetFuturePos, 100000.0f));      
+                foreach(Line l in _tempLines)
+                    g.DrawLine(l.pen, WorldToClient(l.start), WorldToClient(l.end));
+                _tempLines.Clear();
             }
             pe.Graphics.DrawImageUnscaled(_doubleBuffer, 0, 0);
         }
