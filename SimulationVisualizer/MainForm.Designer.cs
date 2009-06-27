@@ -47,7 +47,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this._delayBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this._preDelay = new System.Windows.Forms.TextBox();
+            this._preOrbit = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this._traceBox = new System.Windows.Forms.CheckBox();
@@ -90,7 +90,7 @@
             this.splitContainer1.Panel2.Controls.Add(this._traceBox);
             this.splitContainer1.Panel2.Controls.Add(this.button1);
             this.splitContainer1.Panel2.Controls.Add(this.label5);
-            this.splitContainer1.Panel2.Controls.Add(this._preDelay);
+            this.splitContainer1.Panel2.Controls.Add(this._preOrbit);
             this.splitContainer1.Panel2.Controls.Add(this.label2);
             this.splitContainer1.Panel2.Controls.Add(this._delayBox);
             this.splitContainer1.Panel2.Controls.Add(this._distanceLabel);
@@ -259,22 +259,22 @@
             this.label2.TabIndex = 11;
             this.label2.Text = "delay";
             // 
-            // _preDelay
+            // _preOrbit
             // 
-            this._preDelay.Location = new System.Drawing.Point(506, 27);
-            this._preDelay.Name = "_preDelay";
-            this._preDelay.Size = new System.Drawing.Size(100, 20);
-            this._preDelay.TabIndex = 12;
-            this._preDelay.Text = "0";
+            this._preOrbit.Location = new System.Drawing.Point(506, 27);
+            this._preOrbit.Name = "_preOrbit";
+            this._preOrbit.Size = new System.Drawing.Size(100, 20);
+            this._preOrbit.TabIndex = 12;
+            this._preOrbit.Text = "0";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(453, 30);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(47, 13);
+            this.label5.Size = new System.Drawing.Size(42, 13);
             this.label5.TabIndex = 13;
-            this.label5.Text = "predelay";
+            this.label5.Text = "preorbit";
             // 
             // button1
             // 
@@ -402,7 +402,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox _delayBox;
-        private System.Windows.Forms.TextBox _preDelay;
+        private System.Windows.Forms.TextBox _preOrbit;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.CheckBox _traceBox;

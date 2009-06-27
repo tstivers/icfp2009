@@ -19,6 +19,9 @@ namespace icfp09
         private double _score;
         private EventHandler<VirtualMachineStepArgs> _handler;
 
+        private int _frameSkip = 1;
+        private int _frame = 0;
+
         private double _minDistance = Double.MaxValue;
 
         public MainForm()
@@ -31,6 +34,9 @@ namespace icfp09
 
         private void OnVmStep(Object vm, VirtualMachineStepArgs args)
         {
+            if(!(_frame++ % _frameSkip == 0))
+                return;
+
             if(args.Score > _score)
             {
                 _score = args.Score;
@@ -53,6 +59,7 @@ namespace icfp09
 
             //double distance = pos.length();
             //_distanceLabel.Text = distance.ToString();
+            //Application.DoEvents();
         }
 
         private void loadProgramToolStripMenuItem_Click(object sender, EventArgs e)
@@ -114,6 +121,8 @@ namespace icfp09
             _vm.Reset();
             _vm.Configuration = _configuration;
 
+            //var preOrbit = Double.Parse(_preOrbit.Text);
+
             // the plan:
             // find our apogee & perigee
             // find target apogee & perigee
@@ -151,26 +160,79 @@ namespace icfp09
             _orbitVisualizer.AddCircle(targetPerigee, Pens.Red);
             //_orbitVisualizer.AddLine(Vector2d.Zero(), Vector2d.FromAngle(targetApogeeAngle) * targetApogee, Pens.Green);
             _orbitVisualizer.AddLine(Vector2d.Zero(), Vector2d.FromAngle(targetPerigeeAngle) * targetPerigee, Pens.Red);
+            _orbitVisualizer.SetScale(Math.Max(myApogee * 2.0, targetApogee * 2.0));
+          
+            // brute force optimal preorbit value
+            double preOrbit = 0.0;
+            double lowWaterDistance = Double.MaxValue;
+            double lowWaterOrbit = 0.0;
+            double orbitInc = 100000.0;
 
-            _vm.Reset();
-            _vm.Configuration = _configuration;
+            while(true)
+            {
+                _vm.Reset();
+                _vm.Configuration = _configuration;
 
+                if(preOrbit != 0.0)
+                    ChangeOrbit(myApogee + preOrbit, false);
 
-            // figure out when I'm directly across from the target at its perigee
+                // figure out when I am across from the perigee                
+                for (int i = 0; i < 90000; i++)
+                {
+                    args = _vm.Step();
+                    if (Math.Abs(args.Position.angdiff(targetPerigeeAngle + Math.PI)) < 0.0001)
+                        break;
+                }
+
+                // burn to the perigee
+                ChangeOrbit(targetPerigee, false);
+
+                // burn to the apogee
+                ChangeOrbit(targetApogee, true);
+
+                // figure out how close we are
+                var distance = (args.Position - args.TargetPosition).length();
+
+                Debug.WriteLine("tried " + (int)preOrbit + ", distance was " + (int)distance + ", inc is " + (int)orbitInc);
+                if(distance < lowWaterDistance)
+                {
+                    lowWaterDistance = distance;
+                    lowWaterOrbit = preOrbit;
+                }
+                else
+                {
+                    if (orbitInc < 1.0)
+                    {
+                        orbitInc = 100000.0;
+                        lowWaterDistance = Double.MaxValue;
+                    }
+                    else
+                    {
+                        preOrbit = lowWaterOrbit;
+                        orbitInc /= 2.0;
+                    }
+                }
+                preOrbit += orbitInc;
+            }
+
+            if (preOrbit != 0.0)
+            {
+                _orbitVisualizer.AddCircle(myApogee + preOrbit, Pens.Green);
+                ChangeOrbit(myApogee + preOrbit, false);
+            }
+
+            // figure out when I am across from the perigee
             int startBurn = 0;
-
-            var delay = Int32.Parse(_delayBox.Text);
-            for (int i = 0; i < delay; i++)
-                _vm.Step();
-
-            for (; startBurn < 90000; startBurn++ )
+            for (; startBurn < 90000; startBurn++)
             {
                 args = _vm.Step();
-                if(Math.Abs(args.Position.angdiff(targetPerigeeAngle + Math.PI)) < 0.01)
+                if(Math.Abs(args.Position.angdiff(targetPerigeeAngle + Math.PI)) < 0.0001)
                     break;
             }
 
-            _orbitVisualizer.AddLine(Vector2d.Zero(), Vector2d.FromAngle(args.Position.angle()) * targetPerigee, Pens.Blue);
+            Debug.WriteLine("starting burn at t=" + startBurn);
+
+            //_orbitVisualizer.AddLine(Vector2d.Zero(), Vector2d.FromAngle(args.Position.angle()) * targetPerigee, Pens.Blue);
 
             _vm.Reset();
 
@@ -179,8 +241,11 @@ namespace icfp09
 
             _vm.Configuration = _configuration;
 
-            for (int i = 0; i < delay; i++)
-                _vm.Step();
+            if(preOrbit != 0.0)
+            {
+                _orbitVisualizer.AddCircle(myApogee + preOrbit, Pens.Green);
+                ChangeOrbit(myApogee + preOrbit, false);
+            }
 
             for (int i = 0; i < startBurn; i++)
                 _vm.Step();
@@ -236,7 +301,7 @@ namespace icfp09
             endVelocity = this.ComputeEndForce(startDistance, startPos.length());
             endVelocity += Double.Parse(_endTweak.Text);
 
-            Debug.WriteLine("endVelocity = " + endVelocity);
+            //Debug.WriteLine("endVelocity = " + endVelocity);
 
             //do second burn
             _vm.XVelocity = endVector.x * endVelocity;

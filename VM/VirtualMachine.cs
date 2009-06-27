@@ -99,6 +99,14 @@ namespace icfp09
             TargetX = targetx;
             TargetY = targety;
         }
+
+        public double myDistance
+        {
+            get
+            {
+                return new Vector2d(X, Y)
+            }
+        }
     }
 
     public class VirtualMachine
