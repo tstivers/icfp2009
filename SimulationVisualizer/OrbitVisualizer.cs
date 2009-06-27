@@ -37,6 +37,19 @@ namespace icfp09
             }
         }
 
+        public float PreOrbitRadius
+        {
+            get
+            {
+                return _preOrbitRadius;
+            }
+            set
+            {
+                _preOrbitRadius = value;
+                this.UpdateBackground();
+            }
+        }
+
         public void MoveOrbiterTo()
         {
             
@@ -55,6 +68,8 @@ namespace icfp09
         private RectangleF _dimensions;
         private SizeF _scale;
 
+        private float _preOrbitRadius;
+
         private PointF _offset;
         private Bitmap _staticBckg;
         private Bitmap _doubleBuffer;
@@ -64,6 +79,7 @@ namespace icfp09
         private Brush _orbiterBrush = new SolidBrush(Color.Yellow);
 
         private Brush _targetBrush = new SolidBrush(Color.DarkCyan);
+        private Pen _preOrbitPen = new Pen(Color.Cyan);
         private Pen _targetPen = new Pen(Color.Green);
 
         private Pen _gridPen = new Pen(Color.FromArgb(25, 25, 25));
@@ -104,7 +120,7 @@ namespace icfp09
         {
             InitializeComponent();
             DrawTrail = true;
-            _dimensions = new RectangleF(0, 0, 50000000.0f, 50000000.0f);
+            _dimensions = new RectangleF(0, 0, 500000000.0f, 500000000.0f);
         }
 
         protected override void OnPaint(PaintEventArgs pe)
@@ -201,6 +217,9 @@ namespace icfp09
 
                 // draw any target radius
                 g.DrawEllipse(_targetPen, this.GetObjectRect(new PointF(0.0f, 0.0f), _targetRadius));
+
+                // draw any target radius
+                g.DrawEllipse(_preOrbitPen, this.GetObjectRect(new PointF(0.0f, 0.0f), _preOrbitRadius));
             }
             this.Invalidate();
         }

@@ -105,18 +105,39 @@ namespace icfp09
             if(_timer != null)
                 _timer.Stop();
             _vm.OnStep -= _handler;
+            _minDistance = Double.MaxValue;
+            _score = 0.0;
+            _scoreLabel.Text = "";
+            _configuration = Double.Parse(_scenarioBox.Text);
 
             _vm.Reset();
             _vm.Configuration = _configuration;
             var args = _vm.Step();
             
             // starting positions
+            var startPos = new Vector2d(args.X, args.Y);
+            var startDistance = startPos.length();
             var targetPos = new Vector2d(args.X - args.TargetX, args.Y - args.TargetY);
             var targetDistance = targetPos.length();
             _orbitVisualizer.TargetRadius = (float)targetDistance;
 
             _vm.Reset();
+
+            if(_traceBox.Checked)
+                _vm.StartTrace(@"trace_" + _configuration + ".osf", (uint)_configuration);
+
             _vm.Configuration = _configuration;
+
+            var preOrbit = Double.Parse(_preOrbit.Text);
+            if (preOrbit != 0.0)
+            {
+                this.ChangeOrbit(startDistance + preOrbit);
+                _orbitVisualizer.PreOrbitRadius = (float)(startDistance + preOrbit);
+            }
+
+            var delay = Int32.Parse(_delayBox.Text);
+            for (int i = 0; i < delay; i++)
+                _vm.Step();
 
             ChangeOrbit(targetDistance);
 
@@ -142,9 +163,10 @@ namespace icfp09
             var endVelocity = this.ComputeEndForce(startDistance, targetRadius);
             var transferTime = this.ComputeTransferTime(startDistance, targetRadius);
 
+            startVelocity += Double.Parse(_startTweak.Text);
+
             // reset the state
             _vm.Reset(state);
-            //_vm.Step();
 
             // do the first burn
             _vm.XVelocity = startVector.x * startVelocity;
@@ -154,14 +176,16 @@ namespace icfp09
             _vm.YVelocity = 0.0;
 
             // advance to apogee
-            for (args = _vm.Step(); args.Elapsed <= startTime + transferTime; args = _vm.Step());
+            for (args = _vm.Step(); args.Elapsed < startTime + transferTime; args = _vm.Step());
 
             // compute end vector
-            //state = _vm.SnapShot();
-            //args = _vm.Step();
             startPos = new Vector2d(args.X, args.Y);
             var endVector = startPos.tangent();
-            //_vm.Reset(state);
+
+            endVelocity = this.ComputeEndForce(startDistance, startPos.length());
+            endVelocity += Double.Parse(_endTweak.Text);
+
+            Debug.WriteLine("endVelocity = " + endVelocity);
 
             //do second burn
             _vm.XVelocity = endVector.x * endVelocity;

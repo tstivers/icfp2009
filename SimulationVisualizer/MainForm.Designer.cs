@@ -47,7 +47,17 @@
             this.label1 = new System.Windows.Forms.Label();
             this._delayBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this._preOrbit = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
+            this._traceBox = new System.Windows.Forms.CheckBox();
+            this._scenarioBox = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this._orbitVisualizer = new icfp09.OrbitVisualizer();
+            this._startTweak = new System.Windows.Forms.TextBox();
+            this._endTweak = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -71,6 +81,16 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.label10);
+            this.splitContainer1.Panel2.Controls.Add(this.label9);
+            this.splitContainer1.Panel2.Controls.Add(this._endTweak);
+            this.splitContainer1.Panel2.Controls.Add(this._startTweak);
+            this.splitContainer1.Panel2.Controls.Add(this.label7);
+            this.splitContainer1.Panel2.Controls.Add(this._scenarioBox);
+            this.splitContainer1.Panel2.Controls.Add(this._traceBox);
+            this.splitContainer1.Panel2.Controls.Add(this.button1);
+            this.splitContainer1.Panel2.Controls.Add(this.label5);
+            this.splitContainer1.Panel2.Controls.Add(this._preOrbit);
             this.splitContainer1.Panel2.Controls.Add(this.label2);
             this.splitContainer1.Panel2.Controls.Add(this._delayBox);
             this.splitContainer1.Panel2.Controls.Add(this._distanceLabel);
@@ -83,8 +103,8 @@
             this.splitContainer1.Panel2.Controls.Add(this.label3);
             this.splitContainer1.Panel2.Controls.Add(this._scoreLabel);
             this.splitContainer1.Panel2.Controls.Add(this.label1);
-            this.splitContainer1.Size = new System.Drawing.Size(1022, 721);
-            this.splitContainer1.SplitterDistance = 581;
+            this.splitContainer1.Size = new System.Drawing.Size(910, 661);
+            this.splitContainer1.SplitterDistance = 521;
             this.splitContainer1.TabIndex = 0;
             // 
             // toolStrip1
@@ -93,7 +113,7 @@
             this._stepButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1022, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(910, 25);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -113,7 +133,7 @@
             this.toolStripMenuItem1});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1022, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(910, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -135,7 +155,7 @@
             // _distanceLabel
             // 
             this._distanceLabel.AutoSize = true;
-            this._distanceLabel.Location = new System.Drawing.Point(264, 61);
+            this._distanceLabel.Location = new System.Drawing.Point(127, 89);
             this._distanceLabel.Name = "_distanceLabel";
             this._distanceLabel.Size = new System.Drawing.Size(35, 13);
             this._distanceLabel.TabIndex = 9;
@@ -144,7 +164,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(209, 61);
+            this.label4.Location = new System.Drawing.Point(72, 89);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(49, 13);
             this.label4.TabIndex = 8;
@@ -239,22 +259,111 @@
             this.label2.TabIndex = 11;
             this.label2.Text = "delay";
             // 
+            // _preOrbit
+            // 
+            this._preOrbit.Location = new System.Drawing.Point(506, 27);
+            this._preOrbit.Name = "_preOrbit";
+            this._preOrbit.Size = new System.Drawing.Size(100, 20);
+            this._preOrbit.TabIndex = 12;
+            this._preOrbit.Text = "0";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(465, 30);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(42, 13);
+            this.label5.TabIndex = 13;
+            this.label5.Text = "preorbit";
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(506, 79);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(100, 23);
+            this.button1.TabIndex = 14;
+            this.button1.Text = "execute\r\n";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this._stepButton_Click);
+            // 
+            // _traceBox
+            // 
+            this._traceBox.AutoSize = true;
+            this._traceBox.Location = new System.Drawing.Point(667, 56);
+            this._traceBox.Name = "_traceBox";
+            this._traceBox.Size = new System.Drawing.Size(76, 17);
+            this._traceBox.TabIndex = 15;
+            this._traceBox.Text = "save trace";
+            this._traceBox.UseVisualStyleBackColor = true;
+            // 
+            // _scenarioBox
+            // 
+            this._scenarioBox.Location = new System.Drawing.Point(720, 27);
+            this._scenarioBox.Name = "_scenarioBox";
+            this._scenarioBox.Size = new System.Drawing.Size(100, 20);
+            this._scenarioBox.TabIndex = 16;
+            this._scenarioBox.Text = "2002";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(667, 29);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(47, 13);
+            this.label7.TabIndex = 17;
+            this.label7.Text = "scenario";
+            // 
             // _orbitVisualizer
             // 
             this._orbitVisualizer.Dock = System.Windows.Forms.DockStyle.Fill;
             this._orbitVisualizer.DrawTrail = true;
             this._orbitVisualizer.Location = new System.Drawing.Point(0, 49);
             this._orbitVisualizer.Name = "_orbitVisualizer";
-            this._orbitVisualizer.Size = new System.Drawing.Size(1022, 532);
+            this._orbitVisualizer.PreOrbitRadius = 0F;
+            this._orbitVisualizer.Size = new System.Drawing.Size(910, 472);
             this._orbitVisualizer.TabIndex = 2;
             this._orbitVisualizer.TargetRadius = 0F;
             this._orbitVisualizer.Text = "orbitVisualizer1";
+            // 
+            // _startTweak
+            // 
+            this._startTweak.Location = new System.Drawing.Point(316, 26);
+            this._startTweak.Name = "_startTweak";
+            this._startTweak.Size = new System.Drawing.Size(100, 20);
+            this._startTweak.TabIndex = 18;
+            this._startTweak.Text = "0";
+            // 
+            // _endTweak
+            // 
+            this._endTweak.Location = new System.Drawing.Point(316, 54);
+            this._endTweak.Name = "_endTweak";
+            this._endTweak.Size = new System.Drawing.Size(100, 20);
+            this._endTweak.TabIndex = 19;
+            this._endTweak.Text = "0";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(251, 30);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(59, 13);
+            this.label9.TabIndex = 20;
+            this.label9.Text = "start tweak";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(253, 56);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(57, 13);
+            this.label10.TabIndex = 21;
+            this.label10.Text = "end tweak";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1022, 721);
+            this.ClientSize = new System.Drawing.Size(910, 661);
             this.Controls.Add(this.splitContainer1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
@@ -293,6 +402,16 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox _delayBox;
+        private System.Windows.Forms.TextBox _preOrbit;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.CheckBox _traceBox;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox _scenarioBox;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox _endTweak;
+        private System.Windows.Forms.TextBox _startTweak;
     }
 }
 
