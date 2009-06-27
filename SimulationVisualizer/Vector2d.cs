@@ -38,8 +38,24 @@ namespace icfp09
 
         public Vector2d(double angle)
         {
-            this.x = Math.Cos(((-1.0 * angle) - 90.0) * (Math.PI / 180.0));
-            this.y = Math.Sin(((-1.0 * angle) - 90.0) * (Math.PI / 180.0));
+            this.x = Math.Sin(angle);
+            this.y = Math.Cos(angle);
+        }
+
+        public Vector2d tangent()
+        {
+            var nrm = this.normalize();
+            return new Vector2d(-1.0 * nrm.y, nrm.x);
+            //if (nrm.x >= 0.0 && nrm.y >= 0.0)
+            //    tan = new Vector2d(-1.0 * nrm.y, nrm.x);
+            //else if (nrm.x < 0.0 && nrm.y < 0.0)
+            //    tan = new Vector2d(-1.0 * nrm.y, nrm.x);
+            //else if (nrm.x >= 0.0 && nrm.y < 0.0)
+            //    tan = new Vector2d(-1.0 * nrm.y, nrm.x);
+            //else //if (nrm.x < 0.0 && nrm.y >= 0.0)
+            //    tan = new Vector2d(-1.0 * nrm.y, nrm.x);
+
+            //return tan;
         }
 
         public double angle(Vector2d other)

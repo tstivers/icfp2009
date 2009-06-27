@@ -19,7 +19,11 @@ namespace icfp09
         public void SetOrbiterPos(double x, double y)
         {
             _orbiterPos = new PointF((float)x, (float)y);
-            this.Invalidate();
+        }
+
+        public void SetTargetPos(double x, double y)
+        {
+            _targetPos = new PointF((float)x, (float)y);
         }
 
         public float TargetRadius
@@ -45,6 +49,8 @@ namespace icfp09
 
         private float _aspectRatio;
         private PointF _orbiterPos;
+
+        private PointF _targetPos;
         private float _targetRadius;
         private RectangleF _dimensions;
         private SizeF _scale;
@@ -56,6 +62,8 @@ namespace icfp09
         private Brush _backBrush = new SolidBrush(Color.Black);
         private Brush _earthBrush = new SolidBrush(Color.Blue);
         private Brush _orbiterBrush = new SolidBrush(Color.Yellow);
+
+        private Brush _targetBrush = new SolidBrush(Color.DarkCyan);
         private Pen _targetPen = new Pen(Color.Green);
 
         private Pen _gridPen = new Pen(Color.FromArgb(25, 25, 25));
@@ -105,6 +113,7 @@ namespace icfp09
             {
                 g.DrawImageUnscaled(_staticBckg, 0, 0);
                 g.FillEllipse(_orbiterBrush, this.GetObjectRect(_orbiterPos, 100000.0f));
+                g.FillEllipse(_targetBrush, this.GetObjectRect(_targetPos, 100000.0f));
                 foreach (Line l in _debugLines)
                     g.DrawLine(l.pen, WorldToClient(l.start), WorldToClient(l.end));
             }
@@ -164,10 +173,10 @@ namespace icfp09
                     (int)((radius * _scale.Height) * 2));
 
             // make sure it is at least 1 px by 1px
-            if (rect.Width < 2)
-                rect.Width = 2;
-            if (rect.Height < 2)
-                rect.Height = 2;
+            if (rect.Width < 4)
+                rect.Width = 4;
+            if (rect.Height < 4)
+                rect.Height = 4;
 
             return rect;
         }

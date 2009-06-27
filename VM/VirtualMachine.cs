@@ -85,21 +85,21 @@ namespace icfp09
         public double Fuel { get; private set; }
         public double X { get; private set; }
         public double Y { get; private set; }
-        public double Target { get; private set; }
+        public double TargetX { get; private set; }
+        public double TargetY { get; private set; }
         public int Elapsed { get; private set; }
 
-        public VirtualMachineStepArgs(int elapsed, double score, double fuel, double x, double y, double target)
+        public VirtualMachineStepArgs(int elapsed, double score, double fuel, double x, double y, double targetx, double targety)
         {
             Elapsed = elapsed;
             Score = score;
             Fuel = fuel;
             X = x;
             Y = y;
-            Target = target;
+            TargetX = targetx;
+            TargetY = targety;
         }
     }
-
-
 
     public class VirtualMachine
     {
@@ -346,8 +346,7 @@ namespace icfp09
                 this.EndTrace();
 
             Elapsed = Elapsed + 1;
-            var args = new VirtualMachineStepArgs(
-                    Elapsed, _output[0x0], _output[0x1], _output[0x2], _output[0x3], _output[0x4]);
+            var args = new VirtualMachineStepArgs(Elapsed, _output[0x0], _output[0x1], _output[0x2], _output[0x3], _output[0x4], _output[0x5]);
 
             if (OnStep != null)
                 OnStep(this, args);

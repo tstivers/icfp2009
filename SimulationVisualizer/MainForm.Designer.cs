@@ -31,21 +31,23 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this._stepButton = new System.Windows.Forms.ToolStripButton();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.loadProgramToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this._stepButton = new System.Windows.Forms.ToolStripButton();
-            this.label1 = new System.Windows.Forms.Label();
-            this._scoreLabel = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this._positionLabel = new System.Windows.Forms.Label();
+            this._distanceLabel = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this._targetLabel = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this._fuelLabel = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
+            this._positionLabel = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this._scoreLabel = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this._delayBox = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this._orbitVisualizer = new icfp09.OrbitVisualizer();
-            this._distanceLabel = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -69,6 +71,8 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.label2);
+            this.splitContainer1.Panel2.Controls.Add(this._delayBox);
             this.splitContainer1.Panel2.Controls.Add(this._distanceLabel);
             this.splitContainer1.Panel2.Controls.Add(this.label4);
             this.splitContainer1.Panel2.Controls.Add(this._targetLabel);
@@ -92,6 +96,16 @@
             this.toolStrip1.Size = new System.Drawing.Size(1022, 25);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
+            // 
+            // _stepButton
+            // 
+            this._stepButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this._stepButton.Image = ((System.Drawing.Image)(resources.GetObject("_stepButton.Image")));
+            this._stepButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._stepButton.Name = "_stepButton";
+            this._stepButton.Size = new System.Drawing.Size(23, 22);
+            this._stepButton.Text = "toolStripButton1";
+            this._stepButton.Click += new System.EventHandler(this._stepButton_Click);
             // 
             // menuStrip1
             // 
@@ -118,51 +132,23 @@
             this.loadProgramToolStripMenuItem.Text = "Load Program";
             this.loadProgramToolStripMenuItem.Click += new System.EventHandler(this.loadProgramToolStripMenuItem_Click);
             // 
-            // _stepButton
+            // _distanceLabel
             // 
-            this._stepButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this._stepButton.Image = ((System.Drawing.Image)(resources.GetObject("_stepButton.Image")));
-            this._stepButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this._stepButton.Name = "_stepButton";
-            this._stepButton.Size = new System.Drawing.Size(23, 22);
-            this._stepButton.Text = "toolStripButton1";
-            this._stepButton.Click += new System.EventHandler(this._stepButton_Click);
+            this._distanceLabel.AutoSize = true;
+            this._distanceLabel.Location = new System.Drawing.Point(264, 61);
+            this._distanceLabel.Name = "_distanceLabel";
+            this._distanceLabel.Size = new System.Drawing.Size(35, 13);
+            this._distanceLabel.TabIndex = 9;
+            this._distanceLabel.Text = "label2";
             // 
-            // label1
+            // label4
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(72, 35);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(35, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Score";
-            // 
-            // _scoreLabel
-            // 
-            this._scoreLabel.AutoSize = true;
-            this._scoreLabel.Location = new System.Drawing.Point(123, 34);
-            this._scoreLabel.Name = "_scoreLabel";
-            this._scoreLabel.Size = new System.Drawing.Size(35, 13);
-            this._scoreLabel.TabIndex = 1;
-            this._scoreLabel.Text = "label2";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(72, 74);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(44, 13);
-            this.label3.TabIndex = 2;
-            this.label3.Text = "Position";
-            // 
-            // _positionLabel
-            // 
-            this._positionLabel.AutoSize = true;
-            this._positionLabel.Location = new System.Drawing.Point(123, 74);
-            this._positionLabel.Name = "_positionLabel";
-            this._positionLabel.Size = new System.Drawing.Size(35, 13);
-            this._positionLabel.TabIndex = 3;
-            this._positionLabel.Text = "label4";
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(209, 61);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(49, 13);
+            this.label4.TabIndex = 8;
+            this.label4.Text = "Distance";
             // 
             // _targetLabel
             // 
@@ -200,6 +186,59 @@
             this.label8.TabIndex = 4;
             this.label8.Text = "Fuel";
             // 
+            // _positionLabel
+            // 
+            this._positionLabel.AutoSize = true;
+            this._positionLabel.Location = new System.Drawing.Point(123, 74);
+            this._positionLabel.Name = "_positionLabel";
+            this._positionLabel.Size = new System.Drawing.Size(35, 13);
+            this._positionLabel.TabIndex = 3;
+            this._positionLabel.Text = "label4";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(72, 74);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(44, 13);
+            this.label3.TabIndex = 2;
+            this.label3.Text = "Position";
+            // 
+            // _scoreLabel
+            // 
+            this._scoreLabel.AutoSize = true;
+            this._scoreLabel.Location = new System.Drawing.Point(123, 34);
+            this._scoreLabel.Name = "_scoreLabel";
+            this._scoreLabel.Size = new System.Drawing.Size(35, 13);
+            this._scoreLabel.TabIndex = 1;
+            this._scoreLabel.Text = "label2";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(72, 35);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(35, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Score";
+            // 
+            // _delayBox
+            // 
+            this._delayBox.Location = new System.Drawing.Point(506, 53);
+            this._delayBox.Name = "_delayBox";
+            this._delayBox.Size = new System.Drawing.Size(100, 20);
+            this._delayBox.TabIndex = 10;
+            this._delayBox.Text = "0";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(468, 56);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(32, 13);
+            this.label2.TabIndex = 11;
+            this.label2.Text = "delay";
+            // 
             // _orbitVisualizer
             // 
             this._orbitVisualizer.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -210,24 +249,6 @@
             this._orbitVisualizer.TabIndex = 2;
             this._orbitVisualizer.TargetRadius = 0F;
             this._orbitVisualizer.Text = "orbitVisualizer1";
-            // 
-            // _distanceLabel
-            // 
-            this._distanceLabel.AutoSize = true;
-            this._distanceLabel.Location = new System.Drawing.Point(264, 61);
-            this._distanceLabel.Name = "_distanceLabel";
-            this._distanceLabel.Size = new System.Drawing.Size(35, 13);
-            this._distanceLabel.TabIndex = 9;
-            this._distanceLabel.Text = "label2";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(209, 61);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(49, 13);
-            this.label4.TabIndex = 8;
-            this.label4.Text = "Distance";
             // 
             // MainForm
             // 
@@ -270,6 +291,8 @@
         private OrbitVisualizer _orbitVisualizer;
         private System.Windows.Forms.Label _distanceLabel;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox _delayBox;
     }
 }
 
