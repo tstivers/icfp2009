@@ -36,7 +36,7 @@ namespace icfp09
             }
             
             _fuelLabel.Text = args.Fuel.ToString();
-            _orbitVisualizer.SetOrbiterPos(args.X, args.Y);
+            _orbitVisualizer.SetOrbiterPos(new Vector2d(args.X, args.Y));
             _orbitVisualizer.Invalidate();
             _offsetLabel.Text = ((int)(args.Distance - args.TargetRadius)).ToString();
         }
@@ -71,13 +71,16 @@ namespace icfp09
         private void ExecutSimClick(object sender, EventArgs e)
         {
             // reset everything
-            if(_timer != null)
+            // reset everything
+            if (_timer != null)
                 _timer.Stop();
-            _vm.OnStep -= _handler;
+            try { _vm.OnStep -= _handler; }
+            catch (Exception) { }
             _scoreLabel.Text = "";
             _configuration = Double.Parse(_scenarioBox.Text);
             _orbitVisualizer.ClearCircles();
             _orbitVisualizer.ClearLines();
+            _orbitVisualizer.SetScale(0.0);
 
             _vm = new VirtualMachine(new VmProgram(_binBox.Text));
             _vm.Reset();
@@ -124,7 +127,7 @@ namespace icfp09
 
             var args = _vm.Step();
             var startPos = args.Position;
-            var startRadius = args.Distance;
+            var startRadius = args.OrbitRadius;
             var startVector = startPos.tangent();
             var startVelocity = this.ComputStartForce(startRadius, targetRadius);
             var transferTime = this.ComputeTransferTime(startRadius, targetRadius);
@@ -147,7 +150,7 @@ namespace icfp09
                 args = _vm.Step();
 
             var endVector = args.Position.tangent();
-            var endVelocity = this.ComputeEndForce(startRadius, args.Distance);
+            var endVelocity = this.ComputeEndForce(startRadius, args.OrbitRadius);
 
             //do second burn
             _vm.XVelocity = endVector.x * endVelocity;

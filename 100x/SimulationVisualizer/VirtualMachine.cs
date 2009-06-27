@@ -114,6 +114,13 @@ namespace icfp09
             }
         }
 
+        public double OrbitRadius
+        {
+            get
+            {
+                return Position.length();
+            }
+        }
     }
 
     public class VirtualMachine
