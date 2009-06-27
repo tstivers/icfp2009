@@ -36,10 +36,31 @@ namespace icfp09
             this.y = y;
         }
 
+        public double angdiff(Vector2d v)
+        {
+            var v1 = this.normalize();
+            var v2 = v.normalize();
+
+            return Math.Atan2(v2.y, v2.x) - Math.Atan2(v1.y, v1.x);
+        }
+
+        public double angdiff(double d)
+        {
+            var v1 = this.normalize();
+            var v2 = Vector2d.FromAngle(d);
+
+            return Math.Atan2(v2.y, v2.x) - Math.Atan2(v1.y, v1.x);
+        }
+
         public Vector2d(double angle)
         {
             this.x = Math.Sin(angle);
             this.y = Math.Cos(angle);
+        }
+
+        public static Vector2d Zero()
+        {
+            return new Vector2d(0.0, 0.0);
         }
 
         public Vector2d tangent()

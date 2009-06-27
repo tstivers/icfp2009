@@ -24,7 +24,7 @@ namespace icfp09
         public MainForm()
         {
             InitializeComponent();
-            _vm = new VirtualMachine(new VmProgram("C:\\Users\\tstivers\\Desktop\\bin2.obf"));
+            _vm = new VirtualMachine(new VmProgram("C:\\Users\\tstivers\\Desktop\\bin3.obf"));
             _vm.Configuration = _configuration;
             _handler = new EventHandler<VirtualMachineStepArgs>(this.OnVmStep);
         }
@@ -109,17 +109,68 @@ namespace icfp09
             _score = 0.0;
             _scoreLabel.Text = "";
             _configuration = Double.Parse(_scenarioBox.Text);
+            _orbitVisualizer.ClearCircles();
 
             _vm.Reset();
             _vm.Configuration = _configuration;
-            var args = _vm.Step();
-            
-            // starting positions
-            var startPos = new Vector2d(args.X, args.Y);
-            var startDistance = startPos.length();
-            var targetPos = new Vector2d(args.X - args.TargetX, args.Y - args.TargetY);
-            var targetDistance = targetPos.length();
-            _orbitVisualizer.TargetRadius = (float)targetDistance;
+
+            // the plan:
+            // find our apogee & perigee
+            // find target apogee & perigee
+            // transfer to target perigee
+            // when opposite target apogee, transfer to apogee elliptically
+
+            var myApogee = Double.MinValue;
+            var myPerigee = Double.MaxValue;
+            var targetApogee = Double.MinValue;
+            var targetPerigee = Double.MaxValue;
+            double targetApogeeAngle = 0.0;
+            double targetPerigeeAngle = 0.0;
+
+            VirtualMachineStepArgs args = null;
+
+            // find apogee/perigees
+            for(int i = 0; i < 90000; i++)
+            {
+                args = _vm.Step();
+                myApogee = Math.Max(myApogee, args.Distance);
+                myPerigee = Math.Min(myPerigee, args.Distance);
+                if(args.TargetDistance > targetApogee)
+                {
+                    targetApogee = args.TargetDistance;
+                    targetApogeeAngle = args.TargetPosition.angle();
+                }
+                if (args.TargetDistance < targetPerigee)
+                {
+                    targetPerigee = args.TargetDistance;
+                    targetPerigeeAngle = args.TargetPosition.angle();
+                }
+            }
+
+            _orbitVisualizer.AddCircle(targetApogee, Pens.Red);
+            _orbitVisualizer.AddCircle(targetPerigee, Pens.Red);
+            //_orbitVisualizer.AddLine(Vector2d.Zero(), Vector2d.FromAngle(targetApogeeAngle) * targetApogee, Pens.Green);
+            _orbitVisualizer.AddLine(Vector2d.Zero(), Vector2d.FromAngle(targetPerigeeAngle) * targetPerigee, Pens.Red);
+
+            _vm.Reset();
+            _vm.Configuration = _configuration;
+
+
+            // figure out when I'm directly across from the target at its perigee
+            int startBurn = 0;
+
+            var delay = Int32.Parse(_delayBox.Text);
+            for (int i = 0; i < delay; i++)
+                _vm.Step();
+
+            for (; startBurn < 90000; startBurn++ )
+            {
+                args = _vm.Step();
+                if(Math.Abs(args.Position.angdiff(targetPerigeeAngle + Math.PI)) < 0.01)
+                    break;
+            }
+
+            _orbitVisualizer.AddLine(Vector2d.Zero(), Vector2d.FromAngle(args.Position.angle()) * targetPerigee, Pens.Blue);
 
             _vm.Reset();
 
@@ -128,18 +179,15 @@ namespace icfp09
 
             _vm.Configuration = _configuration;
 
-            var preOrbit = Double.Parse(_preOrbit.Text);
-            if (preOrbit != 0.0)
-            {
-                this.ChangeOrbit(startDistance + preOrbit);
-                _orbitVisualizer.PreOrbitRadius = (float)(startDistance + preOrbit);
-            }
-
-            var delay = Int32.Parse(_delayBox.Text);
             for (int i = 0; i < delay; i++)
                 _vm.Step();
 
-            ChangeOrbit(targetDistance);
+            for (int i = 0; i < startBurn; i++)
+                _vm.Step();
+
+            ChangeOrbit(targetPerigee, false);
+
+            ChangeOrbit(targetApogee, true);
 
             _vm.OnStep += _handler;
             _timer = new Timer();
@@ -148,7 +196,7 @@ namespace icfp09
             _timer.Start();
         }
 
-        void ChangeOrbit(double targetRadius)
+        void ChangeOrbit(double targetRadius, bool eliptical)
         {
             var state = _vm.SnapShot();
 
@@ -174,6 +222,9 @@ namespace icfp09
             _vm.Step();
             _vm.XVelocity = 0.0;
             _vm.YVelocity = 0.0;
+
+            if (eliptical)
+                return;
 
             // advance to apogee
             for (args = _vm.Step(); args.Elapsed < startTime + transferTime; args = _vm.Step());

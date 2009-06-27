@@ -47,17 +47,17 @@
             this.label1 = new System.Windows.Forms.Label();
             this._delayBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this._preOrbit = new System.Windows.Forms.TextBox();
+            this._preDelay = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this._traceBox = new System.Windows.Forms.CheckBox();
             this._scenarioBox = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
-            this._orbitVisualizer = new icfp09.OrbitVisualizer();
             this._startTweak = new System.Windows.Forms.TextBox();
             this._endTweak = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
+            this._orbitVisualizer = new icfp09.OrbitVisualizer();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -90,7 +90,7 @@
             this.splitContainer1.Panel2.Controls.Add(this._traceBox);
             this.splitContainer1.Panel2.Controls.Add(this.button1);
             this.splitContainer1.Panel2.Controls.Add(this.label5);
-            this.splitContainer1.Panel2.Controls.Add(this._preOrbit);
+            this.splitContainer1.Panel2.Controls.Add(this._preDelay);
             this.splitContainer1.Panel2.Controls.Add(this.label2);
             this.splitContainer1.Panel2.Controls.Add(this._delayBox);
             this.splitContainer1.Panel2.Controls.Add(this._distanceLabel);
@@ -259,22 +259,22 @@
             this.label2.TabIndex = 11;
             this.label2.Text = "delay";
             // 
-            // _preOrbit
+            // _preDelay
             // 
-            this._preOrbit.Location = new System.Drawing.Point(506, 27);
-            this._preOrbit.Name = "_preOrbit";
-            this._preOrbit.Size = new System.Drawing.Size(100, 20);
-            this._preOrbit.TabIndex = 12;
-            this._preOrbit.Text = "0";
+            this._preDelay.Location = new System.Drawing.Point(506, 27);
+            this._preDelay.Name = "_preDelay";
+            this._preDelay.Size = new System.Drawing.Size(100, 20);
+            this._preDelay.TabIndex = 12;
+            this._preDelay.Text = "0";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(465, 30);
+            this.label5.Location = new System.Drawing.Point(453, 30);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(42, 13);
+            this.label5.Size = new System.Drawing.Size(47, 13);
             this.label5.TabIndex = 13;
-            this.label5.Text = "preorbit";
+            this.label5.Text = "predelay";
             // 
             // button1
             // 
@@ -302,7 +302,7 @@
             this._scenarioBox.Name = "_scenarioBox";
             this._scenarioBox.Size = new System.Drawing.Size(100, 20);
             this._scenarioBox.TabIndex = 16;
-            this._scenarioBox.Text = "2002";
+            this._scenarioBox.Text = "3001";
             // 
             // label7
             // 
@@ -312,18 +312,6 @@
             this.label7.Size = new System.Drawing.Size(47, 13);
             this.label7.TabIndex = 17;
             this.label7.Text = "scenario";
-            // 
-            // _orbitVisualizer
-            // 
-            this._orbitVisualizer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._orbitVisualizer.DrawTrail = true;
-            this._orbitVisualizer.Location = new System.Drawing.Point(0, 49);
-            this._orbitVisualizer.Name = "_orbitVisualizer";
-            this._orbitVisualizer.PreOrbitRadius = 0F;
-            this._orbitVisualizer.Size = new System.Drawing.Size(910, 472);
-            this._orbitVisualizer.TabIndex = 2;
-            this._orbitVisualizer.TargetRadius = 0F;
-            this._orbitVisualizer.Text = "orbitVisualizer1";
             // 
             // _startTweak
             // 
@@ -358,6 +346,18 @@
             this.label10.Size = new System.Drawing.Size(57, 13);
             this.label10.TabIndex = 21;
             this.label10.Text = "end tweak";
+            // 
+            // _orbitVisualizer
+            // 
+            this._orbitVisualizer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._orbitVisualizer.DrawTrail = true;
+            this._orbitVisualizer.Location = new System.Drawing.Point(0, 49);
+            this._orbitVisualizer.Name = "_orbitVisualizer";
+            this._orbitVisualizer.PreOrbitRadius = 0F;
+            this._orbitVisualizer.Size = new System.Drawing.Size(910, 472);
+            this._orbitVisualizer.TabIndex = 2;
+            this._orbitVisualizer.TargetRadius = 0F;
+            this._orbitVisualizer.Text = "orbitVisualizer1";
             // 
             // MainForm
             // 
@@ -402,7 +402,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox _delayBox;
-        private System.Windows.Forms.TextBox _preOrbit;
+        private System.Windows.Forms.TextBox _preDelay;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.CheckBox _traceBox;

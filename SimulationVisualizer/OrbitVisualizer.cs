@@ -26,6 +26,18 @@ namespace icfp09
             _targetPos = new PointF((float)x, (float)y);
         }
 
+        public void AddCircle(double radius, Pen pen)
+        {
+            _debugCircles.Add(new Circle(radius, pen));
+            this.UpdateBackground();
+        }        
+
+        public void ClearCircles()
+        {
+            _debugCircles.Clear();
+            this.UpdateBackground();
+        }
+
         public float TargetRadius
         {
             get {
@@ -100,6 +112,18 @@ namespace icfp09
             public Pen pen;
         }
         private List<Line> _debugLines = new List<Line>();
+        private struct Circle
+        {
+            public double radius;
+            public Pen pen;
+
+            public Circle(double radius, Pen pen)
+            {
+                this.radius = radius;
+                this.pen = pen;
+            }
+        }
+        private List<Circle> _debugCircles = new List<Circle>();
 
         private Vector2d WorldToClient(Vector2d world)
         {
@@ -108,19 +132,26 @@ namespace icfp09
                 (world.y + _offset.Y) * _scale.Height);
         }
 
-        public void DrawLine(Vector2d start, Vector2d end, Pen p)
+        public void AddLine(Vector2d start, Vector2d end, Pen p)
         {
             //start = WorldToClient(start);
             //end = WorldToClient(end);
 
            _debugLines.Add(new Line(start, end, p));
+            this.UpdateBackground();
+        }
+
+        public void ClearLines()
+        {
+            _debugLines.Clear();
+            this.UpdateBackground();
         }
 
         public OrbitVisualizer()
         {
             InitializeComponent();
             DrawTrail = true;
-            _dimensions = new RectangleF(0, 0, 500000000.0f, 500000000.0f);
+            _dimensions = new RectangleF(0, 0, 50000000.0f, 50000000.0f);
         }
 
         protected override void OnPaint(PaintEventArgs pe)
@@ -130,8 +161,7 @@ namespace icfp09
                 g.DrawImageUnscaled(_staticBckg, 0, 0);
                 g.FillEllipse(_orbiterBrush, this.GetObjectRect(_orbiterPos, 100000.0f));
                 g.FillEllipse(_targetBrush, this.GetObjectRect(_targetPos, 100000.0f));
-                foreach (Line l in _debugLines)
-                    g.DrawLine(l.pen, WorldToClient(l.start), WorldToClient(l.end));
+                
             }
             pe.Graphics.DrawImageUnscaled(_doubleBuffer, 0, 0);
         }
@@ -216,10 +246,15 @@ namespace icfp09
                 g.FillEllipse(_earthBrush, GetObjectRect(new PointF(0.0f, 0.0f), 6357000.0f));
 
                 // draw any target radius
-                g.DrawEllipse(_targetPen, this.GetObjectRect(new PointF(0.0f, 0.0f), _targetRadius));
+                //g.DrawEllipse(_targetPen, this.GetObjectRect(new PointF(0.0f, 0.0f), _targetRadius));
 
                 // draw any target radius
-                g.DrawEllipse(_preOrbitPen, this.GetObjectRect(new PointF(0.0f, 0.0f), _preOrbitRadius));
+                //g.DrawEllipse(_preOrbitPen, this.GetObjectRect(new PointF(0.0f, 0.0f), _preOrbitRadius));
+                foreach(var c in _debugCircles)
+                    g.DrawEllipse(c.pen, this.GetObjectRect(new PointF(0.0f, 0.0f), (float)c.radius));
+
+                foreach (var l in _debugLines)
+                    g.DrawLine(l.pen, WorldToClient(l.start), WorldToClient(l.end));
             }
             this.Invalidate();
         }
