@@ -99,8 +99,21 @@ namespace icfp09
         }
     }
 
+
+
     public class VirtualMachine
     {
+        private class InputChange
+        {
+            public int Address { get; private set; }
+            public double Value { get; private set; }
+            public InputChange(int address, double value)
+            {
+                Address = address;
+                Value = value;
+            }
+        }
+
         public EventHandler<VirtualMachineStepArgs> OnStep;
 
         private VmProgram _program;
@@ -108,6 +121,10 @@ namespace icfp09
         private double[] _input = new double[1 << 14];
         private double[] _output = new double[1 << 14];
         private bool _status = false;
+
+        private List<InputChange> _changes = new List<InputChange>();
+
+        private BinaryWriter _traceFile;
 
         public int Elapsed
         {
@@ -122,6 +139,8 @@ namespace icfp09
             set
             {
                 _input[0x3e80] = value;
+                if(_traceFile != null)
+                    _changes.Add(new InputChange(0x3e80, value));
             }
         }
         public double XVelocity
@@ -129,6 +148,9 @@ namespace icfp09
             set
             {
                 _input[0x2] = value;
+                if (_traceFile != null)
+                    _changes.Add(new InputChange(0x2, value));
+
             }
         }
         public double YVelocity
@@ -136,6 +158,9 @@ namespace icfp09
             set
             {
                 _input[0x3] = value;
+                if (_traceFile != null)
+                    _changes.Add(new InputChange(0x3, value));
+
             }
         }
 
@@ -175,6 +200,28 @@ namespace icfp09
         public VmState SnapShot()
         {
             return new VmState(_memory, _input, _output, _status, Elapsed);
+        }
+
+        public void StartTrace(string filename, uint scenario)
+        {
+            const uint header = 0xCAFEBABE;
+            const uint teamid = 150;
+
+            Debug.WriteLine("saving trace to \"" + filename + "\"");
+            _traceFile = new BinaryWriter(File.OpenWrite(filename));
+            _traceFile.Write(header);
+            _traceFile.Write(teamid);
+            _traceFile.Write(scenario);
+        }
+
+        public void EndTrace()
+        {
+            Debug.WriteLine("ending trace (Elapsed = " + Elapsed + ")");
+            const uint end = 0;
+            _traceFile.Write(Elapsed);
+            _traceFile.Write(end);
+            _traceFile.Close();
+            _traceFile = null;
         }
 
         public VirtualMachineStepArgs Step()
@@ -279,6 +326,24 @@ namespace icfp09
                 }
                 #endregion
             }
+
+            if (_traceFile != null && _changes.Count > 0)
+            {
+                Debug.Assert(_output[0x0] == 0.0); // blow up if we change something on the last frame
+                Debug.WriteLine("recording " + _changes.Count + " changes (Elapsed = " + Elapsed + ")");
+                _traceFile.Write(Elapsed);
+                _traceFile.Write(_changes.Count);
+                foreach (var change in _changes)
+                {
+                    _traceFile.Write(change.Address);
+                    _traceFile.Write(change.Value);
+                }
+
+                _changes.Clear();
+            }
+
+            if (_traceFile != null && _output[0x0] != 0.0)
+                this.EndTrace();
 
             Elapsed = Elapsed + 1;
             var args = new VirtualMachineStepArgs(

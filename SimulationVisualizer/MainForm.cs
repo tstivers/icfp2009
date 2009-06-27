@@ -14,13 +14,10 @@ namespace icfp09
     public partial class MainForm : Form
     {
         public VirtualMachine _vm;
-        private bool _vmloaded = false;
         private Timer _timer;
 
-        private double _velocity = 2200.0;
-        private double _lastVelocity;
-
-        private Vector2d _center = new Vector2d(0.0, 0.0);
+        private double _startVelocity;
+        private double _endVelocity;
 
         private Vector2d _startVector;
         private Vector2d _endVector;
@@ -28,9 +25,12 @@ namespace icfp09
 
         private double _startDistance;
 
+        private int _orbitTime;
+
         private double _targetDistance;
-        private double _distance;
         private double _configuration = 1004;
+
+        private double _score;
 
         private EventHandler<VirtualMachineStepArgs> _handler;
 
@@ -44,7 +44,12 @@ namespace icfp09
 
         private void OnVmStep(Object vm, VirtualMachineStepArgs args)
         {
-            _scoreLabel.Text = args.Score.ToString();
+            if(args.Score > _score)
+            {
+                _score = args.Score;
+                _scoreLabel.Text = args.Score.ToString();
+            }
+            
             _fuelLabel.Text = args.Fuel.ToString();
             //_positionLabel.Text = args.X.ToString() + ", " + args.Y.ToString();
             _targetLabel.Text = args.Target.ToString();
@@ -79,6 +84,24 @@ namespace icfp09
             return (Math.Sqrt(GM / r1)) * (Math.Sqrt((r2 * 2) / (r1 + r2)) - 1);
         }
 
+        private double ComputeEndForce(double r1, double r2)
+        {
+            double G = 6.67428E-11;
+            double M = 6E24;
+            double GM = G * M;
+
+            return (Math.Sqrt(GM / r2)) * (1 - Math.Sqrt((r1 * 2) / (r1 + r2)));
+        }
+
+        private double ComputeTransferTime(double r1, double r2)
+        {
+            double G = 6.67428E-11;
+            double M = 6E24;
+            double GM = G * M;
+
+            return Math.PI * Math.Sqrt(Math.Pow(r1 + r2, 3) / (8 * GM));
+        }
+
         private void _stepButton_Click(object sender, EventArgs e)
         {
             if (_timer == null)
@@ -86,97 +109,44 @@ namespace icfp09
                 _vm.Reset();
                 _vm.Configuration = _configuration;
                 var args = _vm.Step();
+                
                 _startPos = new Vector2d(args.X, args.Y);
+                
+                if(_startPos.y > 0.0)
+                    _startVector = new Vector2d(-1.0 * _startPos.normalize().y, _startPos.normalize().x);
+                else
+                    _startVector = new Vector2d(_startPos.normalize().y, -1.0 * _startPos.normalize().x);
+                
+                _endVector = _startVector * -1.0;
+
                 _startDistance = _startPos.length();
                 _targetDistance = args.Target;
-                _velocity = this.ComputStartForce(_startDistance, _targetDistance);
 
-                args = _vm.Step();
-                var pos = new Vector2d(args.X, args.Y);
-                var lastPos = pos;
-                _startVector = (_startPos - pos).normalize();
-                _orbitVisualizer.DrawLine(_startPos, _startPos + (_startVector * -100000000), Pens.Red);
-                while (true)
-                {
-                    //Debug.WriteLine("trying " + _velocity);
-                    _distance = 0.0;
-                    lastPos = pos;
-                    _vm.Reset();
-                    _vm.Configuration = _configuration;
-                    _vm.XVelocity = _startVector.x * _velocity;
-                    _vm.YVelocity = _startVector.y * _velocity;
-                    _vm.Step();
-                    _vm.XVelocity = 0;
-                    _vm.YVelocity = 0;
+                _startVelocity = this.ComputStartForce(_startDistance, _targetDistance);
+                _endVelocity = this.ComputeEndForce(_startDistance, _targetDistance);
 
-                    while (true)
-                    {
-                        args = _vm.Step();
-                        pos = new Vector2d(args.X, args.Y);
-                        Double distance = pos.length();
-                        if (distance < _distance)
-                            break;
-                        _distance = distance;
-                    }
+                _orbitTime = (int)this.ComputeTransferTime(_startDistance, _targetDistance);
+                _orbitVisualizer.DrawLine(_startPos, _startPos + (_startVector * -100000000), Pens.Blue);
 
-                    //Debug.WriteLine(
-                    //        "peaked at " + args.Elapsed + " seconds, distance was " + _distance + " ("
-                    //        + (_distance - args.Target) + ")");
+                 //do first burn
+                _vm.Reset();
+                _vm.StartTrace(@"C:\\Users\\tstivers\\Desktop\\" + (uint)_configuration + ".osf", (uint)_configuration);
+                _vm.Configuration = _configuration;
+                _vm.XVelocity = _startVector.x * _startVelocity;
+                _vm.YVelocity = _startVector.y * _startVelocity;
+                _vm.Step();
+                _vm.XVelocity = 0.0;
+                _vm.YVelocity = 0.0;
 
-                    if(Math.Abs(_distance - args.Target) < 10.0)
-                        break;
-
-                    if(_distance - args.Target > 0.0) // overshot
-                    {
-                        double t = _lastVelocity;
-                        _lastVelocity = _velocity;
-
-                        if (t < _velocity)
-                        {
-                            _velocity -= (_velocity - t) / 2.0;
-                        }
-                        else
-                        {
-                            _velocity -= (t - _velocity) / 2.0;
-                        }
-                    }
-                    else // undershot
-                    {
-                        double t = _lastVelocity;
-                        _lastVelocity = _velocity;
-
-                        _velocity += 50;                     
-                    }
-                }
-
-                var snapshot = _vm.SnapShot();
-                _distance = pos.length();
-                _endVector = _startVector * -1;
-                _orbitVisualizer.DrawLine(pos, pos + (_endVector * -100000000), Pens.Blue);
-
-                //while (true)
-                //{
-                //    _vm.Reset(snapshot);
-                    //_vm.XVelocity = _endVector.x * _velocity;
-                    //_vm.YVelocity = _endVector.y * _velocity;
-                    //_vm.Step();
-                    //_vm.XVelocity = 0.0;
-                    //_vm.YVelocity = 0.0;
-
-                //    args = _vm.Step();
-
-                //    pos = new Vector2d(args.X, args.Y);
-                //    Double distance = pos.length();
-                //    //if (Math.Abs(distance - _distance) < 1.0)
-                //        break;
-
-                //    if ((distance - _distance) > 0.0)
-                //        _velocity -= 1;
-                //    else
-                //        _velocity += 1;
-                //    Debug.WriteLine("trying " + _velocity + ", difference was " + (distance - _distance));
-                //}
-
+                // advance to apogee
+                for (args = _vm.Step(); args.Elapsed <= _orbitTime; args = _vm.Step());                    
+                
+                // do second burn
+                _vm.XVelocity = _endVector.x * _endVelocity;
+                _vm.YVelocity = _endVector.y * _endVelocity;
+                _vm.Step();
+                _vm.XVelocity = 0.0;
+                _vm.YVelocity = 0.0;
 
                 //_vm.Reset();
                 //_vm.Configuration = 1001.0;
