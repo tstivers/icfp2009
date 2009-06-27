@@ -74,10 +74,13 @@ namespace icfp09
             return new Vector2d(0.0, 0.0);
         }
 
-        public Vector2d tangent()
+        public Vector2d tangent(bool clockwise)
         {
             var nrm = this.normalize();
-            return new Vector2d(-1.0 * nrm.y, nrm.x);
+            if(clockwise)
+                return new Vector2d(-1.0 * nrm.y, nrm.x);
+            else
+                return new Vector2d( nrm.y, -1.0 * nrm.x);
         }
 
 

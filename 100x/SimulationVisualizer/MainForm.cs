@@ -19,6 +19,7 @@ namespace icfp09
         private double _configuration;
         private EventHandler<VirtualMachineStepArgs> _handler;
         private int _frameSkip = 10;
+        private bool _clockWise = false;
 
         public MainForm()
         {
@@ -94,6 +95,10 @@ namespace icfp09
 
             var startRadius = args.Distance;
             var targetRadius = args.TargetRadius;
+            var startAngle = args.Position.angle();
+
+            args = _vm.Step();
+            _clockWise = startAngle < args.Position.angle();
 
             _orbitVisualizer.AddCircle(startRadius, Pens.Blue);
             _orbitVisualizer.AddCircle(targetRadius, Pens.Red);
@@ -128,7 +133,7 @@ namespace icfp09
             var args = _vm.Step();
             var startPos = args.Position;
             var startRadius = args.OrbitRadius;
-            var startVector = startPos.tangent();
+            var startVector = startPos.tangent(_clockWise);
             var startVelocity = this.ComputStartForce(startRadius, targetRadius);
             var transferTime = this.ComputeTransferTime(startRadius, targetRadius);
 
@@ -149,7 +154,7 @@ namespace icfp09
             for (int i = 0; i < transferTime - 1; i++)
                 args = _vm.Step();
 
-            var endVector = args.Position.tangent();
+            var endVector = args.Position.tangent(_clockWise);
             var endVelocity = this.ComputeEndForce(startRadius, args.OrbitRadius);
 
             //do second burn
