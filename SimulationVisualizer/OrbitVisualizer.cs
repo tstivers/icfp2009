@@ -62,6 +62,35 @@ namespace icfp09
         private int _gridSizeX = 10;
         private int _gridSizeY = 10;
 
+        private struct Line
+        {
+            public Line(Vector2d start, Vector2d end, Pen pen)
+            {
+                this.start = start;
+                this.end = end;
+                this.pen = pen;
+            }
+
+            public Vector2d start;
+            public Vector2d end;
+            public Pen pen;
+        }
+        private List<Line> _debugLines = new List<Line>();
+
+        private Vector2d WorldToClient(Vector2d world)
+        {
+            return new Vector2d(
+                (world.x + _offset.X) * _scale.Width,
+                (world.y + _offset.Y) * _scale.Height);
+        }
+
+        public void DrawLine(Vector2d start, Vector2d end, Pen p)
+        {
+            //start = WorldToClient(start);
+            //end = WorldToClient(end);
+
+           _debugLines.Add(new Line(start, end, p));
+        }
 
         public OrbitVisualizer()
         {
@@ -76,8 +105,28 @@ namespace icfp09
             {
                 g.DrawImageUnscaled(_staticBckg, 0, 0);
                 g.FillEllipse(_orbiterBrush, this.GetObjectRect(_orbiterPos, 100000.0f));
+                foreach (Line l in _debugLines)
+                    g.DrawLine(l.pen, WorldToClient(l.start), WorldToClient(l.end));
             }
             pe.Graphics.DrawImageUnscaled(_doubleBuffer, 0, 0);
+        }
+
+        protected override void OnMouseWheel(MouseEventArgs e)
+        {
+            base.OnMouseWheel(e);
+            if (e.Delta > 0)
+            {
+                _dimensions.Width *= 1.1f; 
+                _dimensions.Height *= 1.1f;
+            }
+            else
+            {
+                _dimensions.Width *= 0.9f;
+                _dimensions.Height *= 0.9f;
+            }
+            this.ComputeScale();
+            this.UpdateBackground();
+            this.Invalidate();
         }
 
         protected override void OnPaintBackground(PaintEventArgs pevent)

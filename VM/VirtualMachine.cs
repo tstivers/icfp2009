@@ -10,17 +10,20 @@ namespace icfp09
     
     public class VmState
     {
-        private double[] _memory = new double[1 << 14];
-        private double[] _input = new double[1 << 14];
-        private double[] _output = new double[1 << 14];
-        private bool _status = false;
+        public double[] _memory = new double[1 << 14];
+        public double[] _input = new double[1 << 14];
+        public double[] _output = new double[1 << 14];
+        public bool _status;
+        public int _elapsed;
 
-        public int Elapsed
+        public VmState(double[] memory, double[] input, double[] output, bool status, int elapsed)
         {
-            get;
-            private set;
+            memory.CopyTo(_memory, 0);
+            input.CopyTo(_input, 0);
+            output.CopyTo(_output, 0);
+            _status = status;
+            _elapsed = elapsed;
         }
-            
     }
 
     public class VmProgram
@@ -158,6 +161,20 @@ namespace icfp09
             _program.Data.CopyTo(_memory, 0);
             _status = false;
             Elapsed = 0;
+        }
+
+        public void Reset(VmState state)
+        {
+            state._memory.CopyTo(_memory, 0);
+            state._input.CopyTo(_input, 0);
+            state._output.CopyTo(_output, 0);
+            _status = state._status;
+            Elapsed = state._elapsed;
+        }
+
+        public VmState SnapShot()
+        {
+            return new VmState(_memory, _input, _output, _status, Elapsed);
         }
 
         public VirtualMachineStepArgs Step()
