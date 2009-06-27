@@ -16,14 +16,20 @@ namespace icfp09
             
         }
 
-        public void SetOrbiterPos(double x, double y)
+        public void SetOrbiterPos(Vector2d pos)
         {
-            _orbiterPos = new PointF((float)x, (float)y);
+            _orbiterPos = new PointF((float)pos.x, (float)pos.y);
         }
 
-        public void SetTargetPos(double x, double y)
+        public void SetTargetPos(Vector2d pos)
         {
-            _targetPos = new PointF((float)x, (float)y);
+            _targetPos = new PointF((float)pos.x, (float)pos.y);
+        }
+
+        private PointF _targetFuturePos;
+        public void SetTargetFuturePos(Vector2d pos)
+        {
+            _targetFuturePos = new PointF((float)pos.x, (float)pos.y);
         }
 
         public void AddCircle(double radius, Pen pen)
@@ -172,7 +178,7 @@ namespace icfp09
                 g.DrawImageUnscaled(_staticBckg, 0, 0);
                 g.FillEllipse(_orbiterBrush, this.GetObjectRect(_orbiterPos, 100000.0f));
                 g.FillEllipse(_targetBrush, this.GetObjectRect(_targetPos, 100000.0f));
-                
+                g.FillEllipse(Brushes.White, this.GetObjectRect(_targetFuturePos, 100000.0f));                
             }
             pe.Graphics.DrawImageUnscaled(_doubleBuffer, 0, 0);
         }

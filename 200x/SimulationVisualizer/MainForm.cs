@@ -20,11 +20,11 @@ namespace icfp09
         private EventHandler<VirtualMachineStepArgs> _handler;
         private int _frameSkip = 10;
 
+        private int _elapsed;
+
         public MainForm()
         {
             InitializeComponent();
-            _vm = new VirtualMachine(new VmProgram("C:\\Users\\tstivers\\Desktop\\bin3.obf"));
-            _vm.Configuration = _configuration;
             _handler = new EventHandler<VirtualMachineStepArgs>(this.OnVmStep);
         }
 
@@ -34,11 +34,17 @@ namespace icfp09
             {
                 _scoreLabel.Text = args.Score.ToString();
             }
-            
+
+            _elapsed++;
+
             _fuelLabel.Text = args.Fuel.ToString();
-            _orbitVisualizer.SetOrbiterPos(args.X, args.Y);
+            _orbitVisualizer.SetOrbiterPos(args.Position);
+            _orbitVisualizer.SetTargetPos(args.TargetPosition);
+            _orbitVisualizer.SetTargetFuturePos(
+                    Vector2d.FromAngle(this.ComputeAngleAtTime(_targetAngleOffset, _targetRv, args.Elapsed)) * args.TargetOrbitRadius);
             _orbitVisualizer.Invalidate();
-            _offsetLabel.Text = ((int)(args.Distance - args.TargetRadius)).ToString();
+            _offsetLabel.Text = ((int)(args.OrbitRadius - args.TargetOrbitRadius)).ToString();
+            _targetOffsetLabel.Text = ((int)((args.Position - args.TargetPosition).length())).ToString();
         }
 
         private double ComputStartForce(double r1, double r2)
@@ -47,7 +53,7 @@ namespace icfp09
             double M = 6E24;
             double GM = G * M;
 
-            return (Math.Sqrt(GM / r1)) * (Math.Sqrt((r2 * 2) / (r1 + r2)) - 1.0);
+            return (Math.Sqrt(GM / r1)) * (Math.Sqrt((r2 * 2.0) / (r1 + r2)) - 1.0);
         }
 
         private double ComputeEndForce(double r1, double r2)
@@ -56,7 +62,7 @@ namespace icfp09
             double M = 6E24;
             double GM = G * M;
 
-            return (Math.Sqrt(GM / r2)) * (1.0 - Math.Sqrt((r1 * 2) / (r1 + r2)));
+            return (Math.Sqrt(GM / r2)) * (1.0 - Math.Sqrt((r1 * 2.0) / (r1 + r2)));
         }
 
         private double ComputeTransferTime(double r1, double r2)
@@ -68,33 +74,70 @@ namespace icfp09
             return Math.PI * Math.Sqrt(Math.Pow(r1 + r2, 3) / (8 * GM));
         }
 
+        private double ComputeAngleAtTime(double v, double rv, double t)
+        {
+            return v + (rv * t);
+        }
+
+        private double ComputePeriod(double r)
+        {
+            double G = 6.67428E-11;
+            double M = 6E24;
+            double GM = G * M;
+
+            return (2.0 * Math.PI) * Math.Sqrt(Math.Pow(r, 3.0) / GM);
+        }
+
+        private double _targetRv;
+
+        private double _targetAngleOffset;
+
         private void ExecutSimClick(object sender, EventArgs e)
         {
             // reset everything
             if(_timer != null)
                 _timer.Stop();
-            _vm.OnStep -= _handler;
+            try { _vm.OnStep -= _handler; } catch(Exception) {}
             _scoreLabel.Text = "";
             _configuration = Double.Parse(_scenarioBox.Text);
             _orbitVisualizer.ClearCircles();
             _orbitVisualizer.ClearLines();
+            _orbitVisualizer.SetScale(10000000.0);
 
             _vm = new VirtualMachine(new VmProgram(_binBox.Text));
             _vm.Reset();
             _vm.Configuration = _configuration;
 
             // the plan:
-            // find our start orbit           
-            // transfer to target orbit
+            // find our start orbit *
+            // find target orbit *
+            // transfer to another orbit if our orbits are too close together *
+            // delay a certain amount of time
+            // transfer to target orbit *
 
             var args = _vm.Step();
 
-            var startRadius = args.Distance;
-            var targetRadius = args.TargetRadius;
+            var startRadius = args.OrbitRadius;
+            var targetRadius = args.TargetOrbitRadius;
+
+            var transferRadius = 0.0;
+            if (Math.Abs(startRadius - targetRadius) < 1000000.0)
+                transferRadius = targetRadius + 1000000.0;
 
             _orbitVisualizer.AddCircle(startRadius, Pens.Blue);
             _orbitVisualizer.AddCircle(targetRadius, Pens.Red);
+            _orbitVisualizer.AddCircle(transferRadius, Pens.Green);
 
+            {
+                _vm.Reset();
+                _vm.Configuration = _configuration;
+                args = _vm.Step();
+                _orbitVisualizer.AddLine(Vector2d.Zero(), args.TargetPosition, Pens.Blue);
+                for (int i = (int)this.ComputePeriod(args.TargetOrbitRadius); i > 0; i--)
+                    args = _vm.Step();
+                //_orbitVisualizer.AddLine(Vector2d.Zero(), args.TargetPosition, Pens.Red);
+            }
+            
             // reset the vm and do the run for real
             _vm.Reset();
 
@@ -124,7 +167,7 @@ namespace icfp09
 
             var args = _vm.Step();
             var startPos = args.Position;
-            var startRadius = args.Distance;
+            var startRadius = args.OrbitRadius;
             var startVector = startPos.tangent();
             var startVelocity = this.ComputStartForce(startRadius, targetRadius);
             var transferTime = this.ComputeTransferTime(startRadius, targetRadius);
@@ -147,7 +190,7 @@ namespace icfp09
                 args = _vm.Step();
 
             var endVector = args.Position.tangent();
-            var endVelocity = this.ComputeEndForce(startRadius, args.Distance);
+            var endVelocity = this.ComputeEndForce(startRadius, args.OrbitRadius);
 
             //do second burn
             _vm.XVelocity = endVector.x * endVelocity;

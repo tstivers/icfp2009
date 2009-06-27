@@ -42,6 +42,8 @@
             this.label8 = new System.Windows.Forms.Label();
             this._scoreLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this._targetOffsetLabel = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this._orbitVisualizer = new icfp09.OrbitVisualizer();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -62,6 +64,8 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this._targetOffsetLabel);
+            this.splitContainer1.Panel2.Controls.Add(this.label5);
             this.splitContainer1.Panel2.Controls.Add(this.button2);
             this.splitContainer1.Panel2.Controls.Add(this.label2);
             this.splitContainer1.Panel2.Controls.Add(this._binBox);
@@ -104,7 +108,7 @@
             this._binBox.Name = "_binBox";
             this._binBox.Size = new System.Drawing.Size(100, 20);
             this._binBox.TabIndex = 18;
-            this._binBox.Text = "bin1.obf";
+            this._binBox.Text = "bin2.obf";
             // 
             // label7
             // 
@@ -121,7 +125,7 @@
             this._scenarioBox.Name = "_scenarioBox";
             this._scenarioBox.Size = new System.Drawing.Size(100, 20);
             this._scenarioBox.TabIndex = 16;
-            this._scenarioBox.Text = "1001";
+            this._scenarioBox.Text = "2001";
             // 
             // _traceBox
             // 
@@ -155,11 +159,11 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(72, 74);
+            this.label4.Location = new System.Drawing.Point(61, 74);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(35, 13);
+            this.label4.Size = new System.Drawing.Size(60, 13);
             this.label4.TabIndex = 8;
-            this.label4.Text = "Offset";
+            this.label4.Text = "Orbit Offset";
             // 
             // _fuelLabel
             // 
@@ -196,6 +200,24 @@
             this.label1.Size = new System.Drawing.Size(35, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Score";
+            // 
+            // _targetOffsetLabel
+            // 
+            this._targetOffsetLabel.AutoSize = true;
+            this._targetOffsetLabel.Location = new System.Drawing.Point(127, 87);
+            this._targetOffsetLabel.Name = "_targetOffsetLabel";
+            this._targetOffsetLabel.Size = new System.Drawing.Size(35, 13);
+            this._targetOffsetLabel.TabIndex = 22;
+            this._targetOffsetLabel.Text = "label2";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(52, 87);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(69, 13);
+            this.label5.TabIndex = 21;
+            this.label5.Text = "Target Offset";
             // 
             // _orbitVisualizer
             // 
@@ -242,6 +264,8 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox _binBox;
+        private System.Windows.Forms.Label _targetOffsetLabel;
+        private System.Windows.Forms.Label label5;
     }
 }
 

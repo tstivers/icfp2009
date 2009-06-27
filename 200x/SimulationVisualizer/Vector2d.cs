@@ -52,6 +52,12 @@ namespace icfp09
             return Math.Atan2(v2.y, v2.x) - Math.Atan2(v1.y, v1.x);
         }
 
+        public double angle()
+        {
+            var v = this.normalize();
+            return Math.Atan2(v.y, v.x);
+        }
+
         public Vector2d(double angle)
         {
             this.x = Math.Sin(angle);
@@ -67,27 +73,8 @@ namespace icfp09
         {
             var nrm = this.normalize();
             return new Vector2d(-1.0 * nrm.y, nrm.x);
-            //if (nrm.x >= 0.0 && nrm.y >= 0.0)
-            //    tan = new Vector2d(-1.0 * nrm.y, nrm.x);
-            //else if (nrm.x < 0.0 && nrm.y < 0.0)
-            //    tan = new Vector2d(-1.0 * nrm.y, nrm.x);
-            //else if (nrm.x >= 0.0 && nrm.y < 0.0)
-            //    tan = new Vector2d(-1.0 * nrm.y, nrm.x);
-            //else //if (nrm.x < 0.0 && nrm.y >= 0.0)
-            //    tan = new Vector2d(-1.0 * nrm.y, nrm.x);
-
-            //return tan;
         }
 
-        public double angle(Vector2d other)
-        {
-            return (double)(Math.Atan2(other.y, other.x) - Math.Atan2(this.y, this.x));
-        }
-
-        public double angle()
-        {
-            return angle(new Vector2d(0, 1));
-        }
 
         public double dot(Vector2d other)
         {
