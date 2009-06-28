@@ -123,6 +123,7 @@ namespace icfp09
 
             var wasteRadius = startRadius;
             double wasteFuel;
+            double lastWaste = 0.0;
             do
             {
                 wasteRadius += 1E5;
@@ -130,7 +131,10 @@ namespace icfp09
                             + Math.Abs(this.ComputeEndForce(startRadius, wasteRadius))
                             + Math.Abs(this.ComputeStartForce(wasteRadius, startRadius))
                             + Math.Abs(this.ComputeEndForce(wasteRadius, startRadius));
-            } while (wasteFuel < (targetFuel * 0.9));
+                if(Math.Abs(wasteFuel - lastWaste) < 1.0)
+                    break;
+                lastWaste = wasteFuel;
+            } while (wasteFuel < (targetFuel * 0.95));
 
             this.ChangeOrbit(wasteRadius, false);
             this.ChangeOrbit(startRadius, false);
