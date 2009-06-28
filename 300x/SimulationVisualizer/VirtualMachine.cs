@@ -187,16 +187,19 @@ namespace icfp09
         {
             set
             {
+                if(value == _input[0x2])
+                    return;
                 _input[0x2] = value;
                 if (_traceFile != null)
                     _changes.Add(new InputChange(0x2, value));
-
             }
         }
         public double YVelocity
         {
             set
             {
+                if(value == _input[0x3])
+                    return;
                 _input[0x3] = value;
                 if (_traceFile != null)
                     _changes.Add(new InputChange(0x3, value));

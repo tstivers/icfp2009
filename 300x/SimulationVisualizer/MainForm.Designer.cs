@@ -29,6 +29,9 @@
         private void InitializeComponent()
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this._orbitVisualizer = new icfp09.OrbitVisualizer();
+            this._targetOffsetLabel = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this._binBox = new System.Windows.Forms.TextBox();
@@ -42,9 +45,6 @@
             this.label8 = new System.Windows.Forms.Label();
             this._scoreLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this._targetOffsetLabel = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this._orbitVisualizer = new icfp09.OrbitVisualizer();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -83,6 +83,36 @@
             this.splitContainer1.SplitterDistance = 521;
             this.splitContainer1.TabIndex = 0;
             // 
+            // _orbitVisualizer
+            // 
+            this._orbitVisualizer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._orbitVisualizer.DrawTrail = true;
+            this._orbitVisualizer.Location = new System.Drawing.Point(0, 0);
+            this._orbitVisualizer.Name = "_orbitVisualizer";
+            this._orbitVisualizer.PreOrbitRadius = 0F;
+            this._orbitVisualizer.Size = new System.Drawing.Size(910, 521);
+            this._orbitVisualizer.TabIndex = 2;
+            this._orbitVisualizer.TargetRadius = 0F;
+            this._orbitVisualizer.Text = "orbitVisualizer1";
+            // 
+            // _targetOffsetLabel
+            // 
+            this._targetOffsetLabel.AutoSize = true;
+            this._targetOffsetLabel.Location = new System.Drawing.Point(127, 87);
+            this._targetOffsetLabel.Name = "_targetOffsetLabel";
+            this._targetOffsetLabel.Size = new System.Drawing.Size(35, 13);
+            this._targetOffsetLabel.TabIndex = 22;
+            this._targetOffsetLabel.Text = "label2";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(52, 87);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(69, 13);
+            this.label5.TabIndex = 21;
+            this.label5.Text = "Target Offset";
+            // 
             // button2
             // 
             this.button2.Location = new System.Drawing.Point(826, 22);
@@ -108,7 +138,7 @@
             this._binBox.Name = "_binBox";
             this._binBox.Size = new System.Drawing.Size(100, 20);
             this._binBox.TabIndex = 18;
-            this._binBox.Text = "bin2.obf";
+            this._binBox.Text = "bin3.obf";
             // 
             // label7
             // 
@@ -125,7 +155,7 @@
             this._scenarioBox.Name = "_scenarioBox";
             this._scenarioBox.Size = new System.Drawing.Size(100, 20);
             this._scenarioBox.TabIndex = 16;
-            this._scenarioBox.Text = "2001";
+            this._scenarioBox.Text = "3001";
             // 
             // _traceBox
             // 
@@ -200,36 +230,6 @@
             this.label1.Size = new System.Drawing.Size(35, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Score";
-            // 
-            // _targetOffsetLabel
-            // 
-            this._targetOffsetLabel.AutoSize = true;
-            this._targetOffsetLabel.Location = new System.Drawing.Point(127, 87);
-            this._targetOffsetLabel.Name = "_targetOffsetLabel";
-            this._targetOffsetLabel.Size = new System.Drawing.Size(35, 13);
-            this._targetOffsetLabel.TabIndex = 22;
-            this._targetOffsetLabel.Text = "label2";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(52, 87);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(69, 13);
-            this.label5.TabIndex = 21;
-            this.label5.Text = "Target Offset";
-            // 
-            // _orbitVisualizer
-            // 
-            this._orbitVisualizer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._orbitVisualizer.DrawTrail = true;
-            this._orbitVisualizer.Location = new System.Drawing.Point(0, 0);
-            this._orbitVisualizer.Name = "_orbitVisualizer";
-            this._orbitVisualizer.PreOrbitRadius = 0F;
-            this._orbitVisualizer.Size = new System.Drawing.Size(910, 521);
-            this._orbitVisualizer.TabIndex = 2;
-            this._orbitVisualizer.TargetRadius = 0F;
-            this._orbitVisualizer.Text = "orbitVisualizer1";
             // 
             // MainForm
             // 
