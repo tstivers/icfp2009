@@ -42,7 +42,7 @@ namespace icfp09
             _offsetLabel.Text = ((int)(args.Distance - args.TargetRadius)).ToString();
         }
 
-        private double ComputStartForce(double r1, double r2)
+        private double ComputeStartForce(double r1, double r2)
         {
             double G = 6.67428E-11;
             double M = 6E24;
@@ -96,6 +96,7 @@ namespace icfp09
             var startRadius = args.Distance;
             var targetRadius = args.TargetRadius;
             var startAngle = args.Position.angle();
+            var startFuel = args.Fuel;
 
             args = _vm.Step();
             _clockWise = startAngle < args.Position.angle();
@@ -116,7 +117,24 @@ namespace icfp09
 
             _vm.Configuration = _configuration;
 
-            ChangeOrbit(targetRadius, false);
+            var finalFuel = ComputeStartForce(startRadius, targetRadius)
+                            + this.ComputeEndForce(startRadius, targetRadius);
+            var targetFuel = startFuel - finalFuel;
+
+            var wasteRadius = startRadius;
+            double wasteFuel;
+            do
+            {
+                wasteRadius += 1E5;
+                wasteFuel = Math.Abs(ComputeStartForce(startRadius, wasteRadius))
+                            + Math.Abs(this.ComputeEndForce(startRadius, wasteRadius))
+                            + Math.Abs(this.ComputeStartForce(wasteRadius, startRadius))
+                            + Math.Abs(this.ComputeEndForce(wasteRadius, startRadius));
+            } while (wasteFuel < (targetFuel * 0.9));
+
+            this.ChangeOrbit(wasteRadius, false);
+            this.ChangeOrbit(startRadius, false);
+            this.ChangeOrbit(targetRadius, false);
 
             // continue to run the sim
             _vm.OnStep += _handler;
@@ -134,7 +152,7 @@ namespace icfp09
             var startPos = args.Position;
             var startRadius = args.OrbitRadius;
             var startVector = startPos.tangent(_clockWise);
-            var startVelocity = this.ComputStartForce(startRadius, targetRadius);
+            var startVelocity = this.ComputeStartForce(startRadius, targetRadius);
             var transferTime = this.ComputeTransferTime(startRadius, targetRadius);
 
             // reset the state
