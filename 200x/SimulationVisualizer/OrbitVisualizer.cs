@@ -184,7 +184,7 @@ namespace icfp09
                 g.DrawImageUnscaled(_staticBckg, 0, 0);
                 g.FillEllipse(_orbiterBrush, this.GetObjectRect(_orbiterPos, 100000.0f));
                 g.FillEllipse(_targetBrush, this.GetObjectRect(_targetPos, 100000.0f));
-                g.FillEllipse(Brushes.White, this.GetObjectRect(_targetFuturePos, 100000.0f));      
+                //g.FillEllipse(Brushes.White, this.GetObjectRect(_targetFuturePos, 100000.0f));      
                 foreach(Line l in _tempLines)
                     g.DrawLine(l.pen, WorldToClient(l.start), WorldToClient(l.end));
                 _tempLines.Clear();

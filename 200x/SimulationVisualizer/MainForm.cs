@@ -70,7 +70,7 @@ namespace icfp09
             double M = 6E24;
             double GM = G * M;
 
-            return Math.PI * Math.Sqrt(Math.Pow(r1 + r2, 3) / (8 * GM));
+            return Math.PI * Math.Sqrt(Math.Pow(r1 + r2, 3) / (8.0 * GM));
         }
 
         private double ComputeAngleAtTime(double v, double rv, double t)
@@ -101,32 +101,75 @@ namespace icfp09
             Vector2d myFuturePosition;
             Vector2d targetFuturePosition;
             VirtualMachineStepArgs args;
+            double lowWater = Double.MaxValue;
+            int lowTime = 0;
             do
             {
                 args = _vm.Step();
                 myFuturePosition = (args.Position.normalize() * -1.0) * args.TargetOrbitRadius;
                 targetFuturePosition = Vector2d.FromAngle(args.TargetPosition.angle() + (targetRv * transferTime)) * args.TargetOrbitRadius;
+                if ((myFuturePosition - targetFuturePosition).length() < lowWater)
+                {
+                    lowWater = (myFuturePosition - targetFuturePosition).length();
+                    lowTime = args.Elapsed - 1;
+                }
                 burnStart = args.Elapsed - 1;
-                if(burnStart == 1E5)
+                if(burnStart == 3E6)
                     break;
-            } while ((myFuturePosition - targetFuturePosition).length() > 500.0);
+            } while ((myFuturePosition - targetFuturePosition).length() > 200.0);
 
-            return burnStart != 1E5;
+            if (burnStart == 3E6)
+                burnStart = lowTime;
+
+            return burnStart != 3E6;
         }
 
         private double _lastDv;
+        private bool _realClose = false;
+        private int _closeTime;
         private void Finesse()
         {
             var args = _vm.Step();
+            return;
 
-            if (args.TargetDistance > 1000.0 && args.TargetDistance > _lastDv)
+            if (args.TargetDistance > 500.0 && args.TargetDistance > _lastDv && !_realClose)
             {
                 Vector2d targetVector = (args.Position - args.TargetPosition).normalize();
-                //_vm.XVelocity = targetVector.x * 0.0001;
-                //_vm.YVelocity = targetVector.y * 0.0001;
-                //_orbitVisualizer.DrawLine(args.Position, args.Position + (targetVector * 1000000.0), Pens.Brown);
+                _vm.XVelocity = targetVector.x ;
+                _vm.YVelocity = targetVector.y ;
+                _orbitVisualizer.DrawLine(args.Position, args.Position + (targetVector * 1000000.0), Pens.Brown);
             }
+            else
+            {
+                _vm.XVelocity = 0.0;
+                _vm.YVelocity = 0.0;
+            }
+
+            if (args.TargetDistance < 500)
+            {
+                _realClose = true;
+                _closeTime++;
+            }
+
+            if (args.TargetDistance > 900 && _realClose)
+            {
+                _realClose = false;
+                Debug.WriteLine("missed it, time was " + _closeTime);
+                _closeTime = 0;
+            }
+
             _lastDv = args.TargetDistance;
+        }
+
+        private double TestRun(int burnStart, double targetRadius)
+        {
+            _vm.Reset();
+            _vm.Configuration = _configuration;
+            VirtualMachineStepArgs args;
+            for (args = _vm.Step(); args.Elapsed < burnStart; )
+                args = _vm.Step();
+            args = ChangeOrbit(targetRadius, false);
+            return args.TargetDistance;
         }
 
         private void ExecuteSimClick(object sender, EventArgs e)
@@ -141,7 +184,7 @@ namespace icfp09
             _orbitVisualizer.ClearLines();
             _orbitVisualizer.SetScale(0.0);
 
-            _vm = new VirtualMachine(new VmProgram(_binBox.Text));
+            _vm = new VirtualMachine(new VmBinary(_binBox.Text));
             _vm.Reset();
             _vm.Configuration = _configuration;
 
@@ -158,7 +201,7 @@ namespace icfp09
             var targetRadius = args.TargetOrbitRadius;
             var startAngle = args.Position.angle();
 
-            _orbitVisualizer.AddCircle(startRadius, Pens.Blue);
+            _orbitVisualizer.AddCircle(startRadius, Pens.Green);
             _orbitVisualizer.AddCircle(targetRadius, Pens.Red);
 
             args = _vm.Step();
@@ -196,7 +239,7 @@ namespace icfp09
             _timer.Start();
         }
 
-        void ChangeOrbit(double targetRadius, bool eliptical)
+        VirtualMachineStepArgs ChangeOrbit(double targetRadius, bool eliptical)
         {
             var state = _vm.SnapShot();
 
@@ -213,12 +256,12 @@ namespace icfp09
             // do the first burn
             _vm.XVelocity = startVector.x * startVelocity;
             _vm.YVelocity = startVector.y * startVelocity;
-            _vm.Step();
+            args = _vm.Step();
             _vm.XVelocity = 0.0;
             _vm.YVelocity = 0.0;
 
             if (eliptical)
-                return;
+                return args;
 
             // hit the apogee
             for (int i = 0; i < transferTime - 1; i++)
@@ -230,9 +273,10 @@ namespace icfp09
             //do second burn
             _vm.XVelocity = endVector.x * endVelocity;
             _vm.YVelocity = endVector.y * endVelocity;
-            _vm.Step();
+            args = _vm.Step();
             _vm.XVelocity = 0.0;
-            _vm.YVelocity = 0.0;            
+            _vm.YVelocity = 0.0;
+            return args;
         }
 
         void TimerTick(object sender, EventArgs e)
