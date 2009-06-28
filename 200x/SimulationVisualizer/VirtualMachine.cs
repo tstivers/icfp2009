@@ -26,7 +26,7 @@ namespace icfp09
         }
     }
 
-    public class VmProgram
+    public class VmBinary
     {
         // vector of instructions
         private readonly int[] _instructions = new int[1 << 14];
@@ -52,7 +52,7 @@ namespace icfp09
             get { return _length;  }
         }
 
-        public VmProgram(string filename)
+        public VmBinary(string filename)
         {
             var info = new FileInfo(filename);
             Debug.Assert(info.Length % 12 == 0); // executable is a collection of 12-byte frames
@@ -156,7 +156,7 @@ namespace icfp09
 
         public EventHandler<VirtualMachineStepArgs> OnStep;
 
-        private VmProgram _program;
+        private VmBinary _program;
         private double[] _memory = new double[1 << 14];
         private double[] _input = new double[1 << 14];
         private double[] _output = new double[1 << 14];
@@ -185,6 +185,10 @@ namespace icfp09
         }
         public double XVelocity
         {
+            get
+            {
+                return _input[0x2];
+            }
             set
             {
                 _input[0x2] = value;
@@ -195,6 +199,10 @@ namespace icfp09
         }
         public double YVelocity
         {
+            get
+            {
+                return _input[0x3];
+            }
             set
             {
                 _input[0x3] = value;
@@ -213,7 +221,7 @@ namespace icfp09
             get { return _output; }
         }
 
-        public VirtualMachine(VmProgram program)
+        public VirtualMachine(VmBinary program)
         {
             _program = program;
             this.Reset();
